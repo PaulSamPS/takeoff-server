@@ -3,6 +3,9 @@ const ApiError = require('../error/ApiError')
 const tokenService = require('./token-service')
 const UserDto = require('./dtos')
 const bcrypt = require('bcrypt')
+const uuid = require('uuid')
+const path = require('path')
+const fs = require('fs')
 
 class UserService {
   async registration(name, email, position, level, password, next) {
@@ -79,11 +82,11 @@ class UserService {
     return { ...tokens, user: userDto }
   }
 
-  async getOne(id, next) {
+  async avatar(id, avatar) {
     const user = await User.findByPk(id)
-    if (!user) {
-      return next(ApiError.badRequest('Пользователь не найден'))
-    }
+    let fileName = uuid.v4() + '.jpg'
+    await avatar.mv(path.resolve(__dirname, '..', 'static/avatar', fileName))
+    await user.update({ avatar: fileName })
     const userDto = new UserDto(user)
     return { user: userDto }
   }

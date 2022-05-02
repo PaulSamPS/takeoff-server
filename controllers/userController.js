@@ -1,5 +1,8 @@
-const userService = require('../services/user-service')
 const { User } = require('../models/models')
+const userService = require('../services/user-service')
+const ApiError = require('../error/ApiError')
+const path = require('path')
+const fs = require('fs')
 
 class UserController {
   async registration(req, res, next) {
@@ -69,8 +72,36 @@ class UserController {
 
   async getOne(req, res, next) {
     const { id } = req.params
-    const user = await userService.getOne(id, next)
+    const user = await User.findByPk(id)
+    if (!user) {
+      return next(ApiError.badRequest('Пользователь не найден'))
+    }
     return res.json(user)
+  }
+
+  async avatar(req, res) {
+    const { id } = req.params
+    const { avatar } = req.files
+    const user = await userService.avatar(id, avatar)
+    return res.json(user)
+  }
+
+  async removeAvatar(req, res, next) {
+    const { id, avatar } = req.params
+    const user = await User.findByPk(id)
+    if (!user) {
+      return next(ApiError.badRequest('Пользователь не найден'))
+    }
+    if (user) {
+      fs.unlink(path.resolve(__dirname, '..', 'static/avatar', avatar), function (err) {
+        if (err) throw err
+        console.log('Файл Удалён')
+      })
+      user.avatar = null
+      await user.save()
+      await user.reload()
+    }
+    return res.status(200).json({ message: 'Аватар удалён' })
   }
 }
 
