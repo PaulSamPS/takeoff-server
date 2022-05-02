@@ -7,21 +7,21 @@ const bcrypt = require('bcrypt')
 class UserService {
   async registration(name, email, position, level, password, role, next) {
     if (!email) {
-      return next(ApiError.internal('Некорректный email'))
+      return next(ApiError.badRequest('Некорректный email'))
     }
     if (!password) {
-      return next(ApiError.internal('Некорректный пароль'))
+      return next(ApiError.badRequest('Некорректный пароль'))
     }
     if (!name) {
-      return next(ApiError.internal('Некорректне имя'))
+      return next(ApiError.badRequest('Некорректне имя'))
     }
     const candidateUserName = await User.findOne({ where: { name } })
     if (candidateUserName) {
-      return next(ApiError.internal('Пользователь с таким логином уже существует'))
+      return next(ApiError.badRequest('Пользователь с таким логином уже существует'))
     }
     const candidateEmail = await User.findOne({ where: { email } })
     if (candidateEmail) {
-      return next(ApiError.internal('Пользователь с таким email уже существует'))
+      return next(ApiError.badRequest('Пользователь с таким email уже существует'))
     }
     const hashPassword = await bcrypt.hash(password, 5)
     const user = await User.create({
