@@ -4,15 +4,15 @@ module.exports = class UserDto {
   email
   position
   level
-  role
   avatar
+  isAuth
   constructor(model) {
     this.id = model.id
     this.name = model.name
     this.email = model.email
     this.position = model.position
     this.level = model.level
-    this.role = model.role
     this.avatar = model.avatar
+    this.isAuth = model.isAuth
   }
 }

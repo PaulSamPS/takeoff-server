@@ -5,7 +5,7 @@ const UserDto = require('./dtos')
 const bcrypt = require('bcrypt')
 
 class UserService {
-  async registration(name, email, position, level, password, role, next) {
+  async registration(name, email, position, level, password, next) {
     if (!email) {
       return next(ApiError.badRequest('Некорректный email'))
     }
@@ -29,7 +29,6 @@ class UserService {
       email,
       position,
       level,
-      role,
       password: hashPassword,
     })
     const userDto = new UserDto(user)
@@ -41,12 +40,38 @@ class UserService {
   async login(name, password, next) {
     const user = await User.findOne({ where: { name } })
     if (!user) {
-      return next(ApiError.internal('Пользователь с таким логином не найден'))
+      return next(ApiError.internal('Неверный логин'))
     }
     let comparePassword = bcrypt.compareSync(password, user.password)
     if (!comparePassword) {
       return next(ApiError.internal('Неверный пароль'))
     }
+    user.isAuth = true
+    await user.save()
+    const userDto = new UserDto(user)
+    const tokens = tokenService.generateTokens({ ...userDto })
+
+    await tokenService.saveToken(userDto.name, tokens.refreshToken)
+    return { ...tokens, user: userDto }
+  }
+
+  async logout(refreshToken, name) {
+    const user = await User.findOne({ where: { name } })
+    user.isAuth = false
+    await user.save()
+    return await tokenService.removeToken(refreshToken)
+  }
+
+  async refresh(refreshToken, next) {
+    if (!refreshToken) {
+      return next(ApiError.unauthorized('Не авторизован'))
+    }
+    const userData = tokenService.validateRefreshToken(refreshToken)
+    const tokenFromDb = await tokenService.findToken(refreshToken)
+    if (!userData || !tokenFromDb) {
+      return next(ApiError.unauthorized('Не авторизован, нет токена'))
+    }
+    const user = await User.findOne({ userName: userData.name })
     const userDto = new UserDto(user)
     const tokens = tokenService.generateTokens({ ...userDto })
 

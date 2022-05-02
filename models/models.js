@@ -10,6 +10,7 @@ const User = sequelize.define(
     position: { type: DataTypes.STRING, required: true },
     password: { type: DataTypes.STRING, required: true },
     level: { type: DataTypes.STRING, required: true },
+    isAuth: { type: DataTypes.BOOLEAN, defaultValue: false },
     avatar: { type: DataTypes.STRING },
   },
   { timestamps: false }
