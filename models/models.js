@@ -1,23 +1,42 @@
 const sequelize = require('../db')
 const { DataTypes } = require('sequelize')
 
-const User = sequelize.define('user', {
-  id: { type: DataTypes.STRING(2048), unique: true, primaryKey: true },
-  name: { type: DataTypes.STRING, unique: true, required: true },
-  email: { type: DataTypes.STRING, unique: true, required: true },
-  profession: { type: DataTypes.STRING, unique: true, required: true },
-  avatar: { type: DataTypes.STRING },
-  password: { type: DataTypes.STRING, required: true },
-  role: { type: DataTypes.STRING, defaultValue: 'USER', required: true },
-})
+const User = sequelize.define(
+  'user',
+  {
+    id: { type: DataTypes.INTEGER, unique: true, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, unique: true, required: true },
+    email: { type: DataTypes.STRING, unique: true, required: true },
+    profession: { type: DataTypes.STRING, unique: true, required: true },
+    password: { type: DataTypes.STRING, required: true },
+    avatar: { type: DataTypes.STRING },
+    role: { type: DataTypes.STRING, defaultValue: 'USER', required: true },
+  },
+  { timestamps: false }
+)
 
-const Token = sequelize.define('token', {
-  id: { type: DataTypes.STRING(2048), unique: true, primaryKey: true },
-  userId: { type: DataTypes.STRING(2048) },
-  refreshToken: { type: DataTypes.STRING(2048), ref: 'user' },
-})
+const Profession = sequelize.define(
+  'profession',
+  {
+    id: { type: DataTypes.INTEGER, unique: true, primaryKey: true, autoIncrement: true },
+    name: { type: DataTypes.STRING, required: true },
+  },
+  { timestamps: false }
+)
+
+const Token = sequelize.define(
+  'token',
+  {
+    id: { type: DataTypes.INTEGER, unique: true, primaryKey: true, autoIncrement: true },
+
+    userName: { type: DataTypes.STRING },
+    refreshToken: { type: DataTypes.STRING(2048), ref: 'user' },
+  },
+  { timestamps: false }
+)
 
 module.exports = {
   User,
   Token,
+  Profession,
 }
