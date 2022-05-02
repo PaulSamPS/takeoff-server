@@ -1,4 +1,5 @@
 const userService = require('../services/user-service')
+const { User } = require('../models/models')
 
 class UserController {
   async registration(req, res, next) {
@@ -59,6 +60,17 @@ class UserController {
     } catch (e) {
       next(e)
     }
+  }
+
+  async getAll(req, res) {
+    const user = await User.findAndCountAll()
+    return res.json(user)
+  }
+
+  async getOne(req, res, next) {
+    const { id } = req.params
+    const user = await userService.getOne(id, next)
+    return res.json(user)
   }
 }
 

@@ -78,6 +78,15 @@ class UserService {
     await tokenService.saveToken(userDto.name, tokens.refreshToken)
     return { ...tokens, user: userDto }
   }
+
+  async getOne(id, next) {
+    const user = await User.findByPk(id)
+    if (!user) {
+      return next(ApiError.badRequest('Пользователь не найден'))
+    }
+    const userDto = new UserDto(user)
+    return { user: userDto }
+  }
 }
 
 module.exports = new UserService()
