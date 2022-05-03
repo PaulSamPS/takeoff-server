@@ -90,6 +90,36 @@ class UserService {
     const userDto = new UserDto(user)
     return { user: userDto }
   }
+
+  async updateUser(id, name, email, position, level, next) {
+    const user = await User.findByPk(id)
+    if (!user) {
+      return next(ApiError.badRequest('Пользователь не найден'))
+    }
+    if (name) {
+      const updateUser = await User.findOne({ where: { name } })
+      if (updateUser) {
+        return next(ApiError.badRequest('Имя занято'))
+      } else {
+        await user.update({ name })
+      }
+    }
+    if (email) {
+      const updateEmail = await User.findOne({ where: { email } })
+      if (updateEmail) {
+        return next(ApiError.badRequest('Пользователь с таким email уже существует'))
+      } else {
+        await user.update({ email })
+      }
+    }
+    if (position) {
+      await user.update({ position })
+    }
+    if (level) {
+      await user.update({ level })
+    }
+    return user
+  }
 }
 
 module.exports = new UserService()

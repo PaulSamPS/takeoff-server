@@ -103,6 +103,20 @@ class UserController {
     }
     return res.status(200).json({ message: 'Аватар удалён' })
   }
+
+  async removeUser(req, res) {
+    const { id } = req.params
+    const user = await User.findByPk(id)
+    await user.destroy()
+    res.status(200).json({ message: 'Пользователь удалён' })
+  }
+
+  async updateUser(req, res, next) {
+    const { id } = req.params
+    const { name, email, position, level } = req.body
+    const user = await userService.updateUser(id, name, email, position, level, next)
+    return res.json(user)
+  }
 }
 
 module.exports = new UserController()
