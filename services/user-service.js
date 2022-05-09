@@ -5,7 +5,6 @@ const UserDto = require('./dtos')
 const bcrypt = require('bcrypt')
 const uuid = require('uuid')
 const path = require('path')
-const fs = require('fs')
 
 class UserService {
   async registration(name, email, position, level, password, next) {
@@ -49,8 +48,6 @@ class UserService {
     if (!comparePassword) {
       return next(ApiError.internal('Неверный пароль'))
     }
-    user.isAuth = true
-    await user.save()
     const userDto = new UserDto(user)
     const tokens = tokenService.generateTokens({ ...userDto })
 
@@ -58,10 +55,7 @@ class UserService {
     return { ...tokens, user: userDto }
   }
 
-  async logout(refreshToken, name) {
-    const user = await User.findOne({ where: { name } })
-    user.isAuth = false
-    await user.save()
+  async logout(refreshToken) {
     return await tokenService.removeToken(refreshToken)
   }
 

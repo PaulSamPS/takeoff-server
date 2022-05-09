@@ -5,7 +5,6 @@ module.exports = class UserDto {
   position
   level
   avatar
-  isAuth
   constructor(model) {
     this.id = model.id
     this.name = model.name
@@ -13,6 +12,5 @@ module.exports = class UserDto {
     this.position = model.position
     this.level = model.level
     this.avatar = model.avatar
-    this.isAuth = model.isAuth
   }
 }
