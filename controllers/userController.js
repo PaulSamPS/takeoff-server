@@ -10,7 +10,7 @@ class UserController {
     try {
       const { name, email, position, level, password } = req.body
 
-      const userData = await userService.registration(name, email, position.value, level, password, next)
+      const userData = await userService.registration(name, email, position, level, password, next)
 
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
@@ -103,9 +103,9 @@ class UserController {
 
   async removeUser(req, res) {
     const { id } = req.params
-    const user = await User.findByPk(id)
-    await user.destroy()
-    res.status(200).json({ message: 'Пользователь удалён' })
+    await User.destroy({ where: { id } })
+    const user = await User.findAll()
+    return res.json(user)
   }
 
   async updateUser(req, res, next) {
