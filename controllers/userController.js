@@ -102,7 +102,14 @@ class UserController {
   }
 
   async removeUser(req, res) {
-    const { id } = req.params
+    const { id, avatar } = req.params
+    const userAvatar = await User.findOne({ where: { avatar } })
+    if (userAvatar) {
+      fs.unlink(path.resolve(__dirname, '..', 'static/avatar', avatar), function (err) {
+        if (err) throw err
+        console.log('Файл Удалён')
+      })
+    }
     await User.destroy({ where: { id } })
     const user = await User.findAll()
     return res.json(user)
