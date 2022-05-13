@@ -93,7 +93,7 @@ class UserService {
     if (name) {
       const updateUser = await User.findOne({ where: { name } })
       if (updateUser) {
-        return next(ApiError.badRequest('Имя занято'))
+        return next(ApiError.badRequest('Логин занят'))
       } else {
         await user.update({ name })
       }
@@ -112,7 +112,8 @@ class UserService {
     if (level) {
       await user.update({ level })
     }
-    return user
+    const userDto = new UserDto(user)
+    return { user: userDto }
   }
 }
 

@@ -66,7 +66,7 @@ class UserController {
   }
 
   async getAll(req, res) {
-    const user = await User.findAll()
+    const user = await User.findAll({ attributes: ['id', 'name', 'email', 'position', 'level', 'role', 'avatar'] })
     return res.json(user)
   }
 
@@ -111,7 +111,7 @@ class UserController {
       })
     }
     await User.destroy({ where: { id } })
-    const user = await User.findAll()
+    const user = await User.findAll({ attributes: ['id', 'name', 'email', 'position', 'level', 'role', 'avatar'] })
     return res.json(user)
   }
 

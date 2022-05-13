@@ -4,6 +4,7 @@ module.exports = class UserDto {
   email
   position
   level
+  role
   avatar
   constructor(model) {
     this.id = model.id
@@ -11,6 +12,7 @@ module.exports = class UserDto {
     this.email = model.email
     this.position = model.position
     this.level = model.level
+    this.role = model.role
     this.avatar = model.avatar
   }
 }
