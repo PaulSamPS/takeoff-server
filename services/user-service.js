@@ -68,11 +68,11 @@ class UserService {
     if (!userData || !tokenFromDb) {
       return next(ApiError.unauthorized('Не авторизован, нет токена'))
     }
-    const user = await User.findOne({ userName: userData.name })
+    const user = await User.findByPk(userData.id)
     const userDto = new UserDto(user)
     const tokens = tokenService.generateTokens({ ...userDto })
-
     await tokenService.saveToken(userDto.name, tokens.refreshToken)
+
     return { ...tokens, user: userDto }
   }
 

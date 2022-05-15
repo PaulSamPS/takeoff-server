@@ -1,4 +1,4 @@
-const { User } = require('../models/models')
+const { User, Token } = require('../models/models')
 const userService = require('../services/user-service')
 const ApiError = require('../error/ApiError')
 const UserDto = require('../services/dtos')
@@ -27,7 +27,7 @@ class UserController {
 
   async login(req, res, next) {
     try {
-      const { password, name } = req.body
+      const { name, password } = req.body
       const userData = await userService.login(name, password, next)
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
@@ -53,12 +53,15 @@ class UserController {
     try {
       const { refreshToken } = req.cookies
       const userData = await userService.refresh(refreshToken, next)
+      console.log(userData)
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
       })
       return res.json({
+        refreshToken: userData.refreshToken,
         accessToken: userData.accessToken,
+        user: userData.user,
       })
     } catch (e) {
       next(e)
@@ -110,6 +113,8 @@ class UserController {
         console.log('Файл Удалён')
       })
     }
+    const userName = userAvatar.name
+    await Token.destroy({ where: { userName } })
     await User.destroy({ where: { id } })
     const user = await User.findAll({ attributes: ['id', 'name', 'email', 'position', 'level', 'role', 'avatar'] })
     return res.json(user)
