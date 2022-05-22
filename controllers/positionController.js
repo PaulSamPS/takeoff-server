@@ -1,10 +1,10 @@
-const { Position } = require('../models/models')
+const Position = require('../models/positionModel')
 const ApiError = require('../error/ApiError')
 
 class PositionController {
   async append(req, res, next) {
     const { name } = req.body
-    const positionName = await Position.findOne({ where: { name } })
+    const positionName = await Position.findOne({ name })
     if (positionName) {
       return next(ApiError.internal('Позиция с таким названием уже существует'))
     }
@@ -13,7 +13,7 @@ class PositionController {
   }
 
   async getAll(req, res) {
-    const position = await Position.findAll()
+    const position = await Position.find()
     return res.json(position)
   }
 }

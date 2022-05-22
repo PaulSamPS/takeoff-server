@@ -1,16 +1,22 @@
 require('dotenv').config()
 const express = require('express')
-const sequelize = require('./db')
+const connectDb = require('./db')
+// const sequelize = require('./db')
 const cors = require('cors')
 const router = require('./routes/index')
 const path = require('path')
 const fileUpload = require('express-fileupload')
 const cookieParser = require('cookie-parser')
 const errorHandler = require('./middleware/errorHandlingMiddleware')
+const { createServer } = require('http')
+const { Server } = require('socket.io')
+const onConnection = require('./socketIo/onConnection')
 
 const PORT = process.env.PORT || 4000
 
 const app = express()
+const httpServer = createServer(app)
+const io = new Server(httpServer, { cors: { origin: process.env.CLIENT_URL } })
 app.use(cookieParser(process.env.SECRET_COOKIE))
 app.use(
   cors({
@@ -24,11 +30,14 @@ app.use(fileUpload({}))
 app.use('/api', router)
 app.use(errorHandler)
 
+io.on('connection', (socket) => {
+  onConnection(io, socket)
+})
+
 const start = async () => {
   try {
-    await sequelize.authenticate()
-    await sequelize.sync()
-    app.listen(PORT, () => console.log(`Сервер запущен на порту ${PORT}`))
+    await connectDb()
+    httpServer.listen(PORT, () => console.log(`Сервер запущен на порту ${PORT}`))
   } catch (e) {
     console.log(e)
   }

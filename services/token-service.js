@@ -1,4 +1,4 @@
-const { Token } = require('../models/models')
+const Token = require('../models/tokenModel')
 const jwt = require('jsonwebtoken')
 
 class TokenService {
@@ -15,13 +15,13 @@ class TokenService {
     }
   }
 
-  async saveToken(userName, refreshToken) {
-    const tokenData = await Token.findOne({ where: { userName: userName } })
+  async saveToken(id, refreshToken) {
+    const tokenData = await Token.findById(id)
     if (tokenData) {
       tokenData.refreshToken = refreshToken
-      return tokenData.save()
+      return tokenData
     }
-    return await Token.create({ userName: userName, refreshToken })
+    return await Token.create({ id, refreshToken })
   }
 
   validateAccessToken(token) {
@@ -41,11 +41,11 @@ class TokenService {
   }
 
   async removeToken(refreshToken) {
-    return await Token.destroy({ where: { refreshToken } })
+    return Token.deleteOne({ refreshToken: refreshToken })
   }
 
   async findToken(refreshToken) {
-    return await Token.findOne({ where: { refreshToken } })
+    return Token.findOne({ refreshToken: refreshToken })
   }
 }
 

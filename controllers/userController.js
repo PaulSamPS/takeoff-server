@@ -1,4 +1,5 @@
-const { User, Token } = require('../models/models')
+const User = require('../models/userModel')
+const Token = require('../models/tokenModel')
 const userService = require('../services/user-service')
 const ApiError = require('../error/ApiError')
 const UserDto = require('../services/dtos')
@@ -12,7 +13,7 @@ class UserController {
 
       const userData = await userService.registration(name, email, position, level, password, next)
 
-      res.cookie('refreshToken', userData.refreshToken, {
+      await res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
       })
@@ -53,7 +54,6 @@ class UserController {
     try {
       const { refreshToken } = req.cookies
       const userData = await userService.refresh(refreshToken, next)
-      console.log(userData)
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
@@ -69,13 +69,13 @@ class UserController {
   }
 
   async getAll(req, res) {
-    const user = await User.findAll({ attributes: ['id', 'name', 'email', 'position', 'level', 'role', 'avatar'] })
+    const user = await User.find()
     return res.json(user)
   }
 
   async getOne(req, res, next) {
     const { id } = req.params
-    const user = await User.findByPk(id)
+    const user = await User.findById(id)
     if (!user) {
       return next(ApiError.badRequest('Пользователь не найден'))
     }
@@ -91,7 +91,7 @@ class UserController {
 
   async removeAvatar(req, res, next) {
     const { id, avatar } = req.params
-    const user = await User.findByPk(id)
+    const user = await User.findById(id)
     if (!user) {
       return next(ApiError.badRequest('Пользователь не найден'))
     }
@@ -99,24 +99,26 @@ class UserController {
       if (err) throw err
       console.log('Файл Удалён')
     })
-    await user.update({ avatar: null })
+    user.avatar = null
+    await user.save()
     const userDto = new UserDto(user)
     return res.json({ user: userDto })
   }
 
   async removeUser(req, res) {
     const { id, avatar } = req.params
-    const userAvatar = await User.findOne({ where: { avatar } })
+    const userAvatar = await User.findOne({ avatar: avatar })
     if (userAvatar) {
       fs.unlink(path.resolve(__dirname, '..', 'static/avatar', avatar), function (err) {
         if (err) throw err
         console.log('Файл Удалён')
       })
     }
-    const userName = userAvatar.name
-    await Token.destroy({ where: { userName } })
-    await User.destroy({ where: { id } })
-    const user = await User.findAll({ attributes: ['id', 'name', 'email', 'position', 'level', 'role', 'avatar'] })
+    const userName = await User.findById({ _id: id })
+    const userDto = new UserDto(userName)
+    await Token.deleteOne({ userName: userDto.name })
+    await User.deleteOne({ _id: id })
+    const user = await User.find()
     return res.json(user)
   }
 

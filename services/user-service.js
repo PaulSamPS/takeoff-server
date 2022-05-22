@@ -1,4 +1,4 @@
-const { User } = require('../models/models')
+const User = require('../models/userModel')
 const ApiError = require('../error/ApiError')
 const tokenService = require('./token-service')
 const UserDto = require('./dtos')
@@ -17,11 +17,11 @@ class UserService {
     if (!name) {
       return next(ApiError.badRequest('Некорректне имя'))
     }
-    const candidateUserName = await User.findOne({ where: { name } })
+    const candidateUserName = await User.findOne({ name })
     if (candidateUserName) {
       return next(ApiError.badRequest('Пользователь с таким логином уже существует'))
     }
-    const candidateEmail = await User.findOne({ where: { email } })
+    const candidateEmail = await User.findOne({ email })
     if (candidateEmail) {
       return next(ApiError.badRequest('Пользователь с таким email уже существует'))
     }
@@ -35,23 +35,23 @@ class UserService {
     })
     const userDto = new UserDto(user)
     const tokens = tokenService.generateTokens({ ...userDto })
-    await tokenService.saveToken(userDto.name, tokens.refreshToken)
+    await tokenService.saveToken(userDto.id, tokens.refreshToken)
     return { ...tokens, userDto }
   }
 
   async login(name, password, next) {
-    const user = await User.findOne({ where: { name } })
+    const user = await User.findOne({ name: name })
     if (!user) {
       return next(ApiError.internal('Неверный логин'))
     }
-    let comparePassword = bcrypt.compareSync(password, user.password)
+    let comparePassword = await bcrypt.compareSync(password, user.password)
     if (!comparePassword) {
       return next(ApiError.internal('Неверный пароль'))
     }
     const userDto = new UserDto(user)
     const tokens = tokenService.generateTokens({ ...userDto })
 
-    await tokenService.saveToken(userDto.name, tokens.refreshToken)
+    await tokenService.saveToken(userDto.id, tokens.refreshToken)
     return { ...tokens, user: userDto }
   }
 
@@ -68,50 +68,52 @@ class UserService {
     if (!userData || !tokenFromDb) {
       return next(ApiError.unauthorized('Не авторизован, нет токена'))
     }
-    const user = await User.findByPk(userData.id)
+    const user = await User.findById(userData.id)
     const userDto = new UserDto(user)
     const tokens = tokenService.generateTokens({ ...userDto })
-    await tokenService.saveToken(userDto.name, tokens.refreshToken)
+    await tokenService.saveToken(userDto.id, tokens.refreshToken)
 
     return { ...tokens, user: userDto }
   }
 
   async avatar(id, avatar) {
-    const user = await User.findByPk(id)
+    const user = await User.findOne({ _id: id })
     let fileName = uuid.v4() + '.jpg'
     await avatar.mv(path.resolve(__dirname, '..', 'static/avatar', fileName))
-    await user.update({ avatar: fileName })
+    user.avatar = fileName
+    await user.save()
     const userDto = new UserDto(user)
     return { user: userDto }
   }
 
   async updateUser(id, name, email, position, level, next) {
-    const user = await User.findByPk(id)
+    const user = await User.findById(id)
     if (!user) {
       return next(ApiError.badRequest('Пользователь не найден'))
     }
     if (name) {
-      const updateUser = await User.findOne({ where: { name } })
+      const updateUser = await User.findOne({ name: name })
       if (updateUser) {
         return next(ApiError.badRequest('Логин занят'))
       } else {
-        await user.update({ name })
+        user.name = name
       }
     }
     if (email) {
-      const updateEmail = await User.findOne({ where: { email } })
+      const updateEmail = await User.findOne({ email: email })
       if (updateEmail) {
         return next(ApiError.badRequest('Пользователь с таким email уже существует'))
       } else {
-        await user.update({ email })
+        user.email = email
       }
     }
     if (position) {
-      await user.update({ position })
+      user.position = position
     }
     if (level) {
-      await user.update({ level })
+      user.level = level
     }
+    await user.save()
     const userDto = new UserDto(user)
     return { user: userDto }
   }
