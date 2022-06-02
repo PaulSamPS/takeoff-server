@@ -1,4 +1,4 @@
-const Token = require('../models/tokenModel')
+const Token = require('../models/token.model')
 const jwt = require('jsonwebtoken')
 
 class TokenService {

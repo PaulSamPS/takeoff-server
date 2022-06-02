@@ -1,5 +1,5 @@
-const Position = require('../models/positionModel')
-const ApiError = require('../error/ApiError')
+const Position = require('../models/position.model')
+const ApiError = require('../error/api.error')
 
 class PositionController {
   async append(req, res, next) {

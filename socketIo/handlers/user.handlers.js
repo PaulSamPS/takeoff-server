@@ -1,33 +1,15 @@
-const users = {}
+const { addUser, removeUser } = require('../services/room.service')
 
 module.exports = function userHandlers(io, socket) {
-  const { roomId, userName } = socket
+  socket.on('user:add', async ({ userId }) => {
+    const users = await addUser(userId, socket.id)
 
-  if (!users[roomId]) {
-    users[roomId] = []
-  }
-
-  const updateUserList = () => {
-    io.to(roomId).emit('user_list:update', users[roomId])
-  }
-
-  socket.on('user:add', async (user) => {
-    socket.to(roomId).emit('log', `User ${userName} connected`)
-
-    user.socketId = socket.id
-
-    users[roomId].push(user)
-
-    updateUserList()
+    setInterval(() => {
+      socket.emit('user_list:update', {
+        users: users.filter((user) => user.userId !== userId),
+      })
+    }, 10000)
   })
 
-  socket.on('disconnect', () => {
-    if (!users[roomId]) return
-
-    socket.to(roomId).emit('log', `User ${userName} disconnected`)
-
-    users[roomId] = users[roomId].filter((u) => u.socketId !== socket.id)
-
-    updateUserList()
-  })
+  socket.on('disconect', () => removeUser(socket.id))
 }

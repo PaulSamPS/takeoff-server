@@ -1,8 +1,9 @@
-const User = require('../models/userModel')
-const Token = require('../models/tokenModel')
-const userService = require('../services/user-service')
-const ApiError = require('../error/ApiError')
-const UserDto = require('../services/dtos')
+const User = require('../models/user.model')
+const Chat = require('../models/chat.model')
+const Token = require('../models/token.model')
+const userService = require('../services/user.service')
+const ApiError = require('../error/api.error')
+const UserDto = require('../dto/user.dto')
 const path = require('path')
 const fs = require('fs')
 
@@ -16,6 +17,8 @@ class UserController {
       await res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
+        sameSite: 'none',
+        secure: true,
       })
       return res.json({
         accessToken: userData.accessToken,
@@ -33,6 +36,8 @@ class UserController {
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
+        sameSite: 'none',
+        secure: true,
       })
       return res.json({
         accessToken: userData.accessToken,
@@ -57,6 +62,8 @@ class UserController {
       res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
+        sameSite: 'none',
+        secure: true,
       })
       return res.json({
         refreshToken: userData.refreshToken,
@@ -90,19 +97,23 @@ class UserController {
   }
 
   async removeAvatar(req, res, next) {
-    const { id, avatar } = req.params
-    const user = await User.findById(id)
-    if (!user) {
-      return next(ApiError.badRequest('Пользователь не найден'))
+    try {
+      const { id, avatar } = req.params
+      const user = await User.findById(id)
+      if (!user) {
+        return next(ApiError.badRequest('Пользователь не найден'))
+      }
+      fs.unlink(path.resolve(__dirname, '..', 'static/avatar', avatar), function (err) {
+        if (err) throw err
+        console.log('Файл Удалён')
+      })
+      user.avatar = null
+      await user.save()
+      const userDto = new UserDto(user)
+      return res.json({ user: userDto })
+    } catch (e) {
+      return next(ApiError.internal(e))
     }
-    fs.unlink(path.resolve(__dirname, '..', 'static/avatar', avatar), function (err) {
-      if (err) throw err
-      console.log('Файл Удалён')
-    })
-    user.avatar = null
-    await user.save()
-    const userDto = new UserDto(user)
-    return res.json({ user: userDto })
   }
 
   async removeUser(req, res) {

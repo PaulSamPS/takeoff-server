@@ -6,6 +6,7 @@ module.exports = class UserDto {
   level
   role
   avatar
+  unreadMessage
   constructor(model) {
     this.id = model.id
     this.name = model.name
@@ -14,5 +15,6 @@ module.exports = class UserDto {
     this.level = model.level
     this.role = model.role
     this.avatar = model.avatar
+    this.unreadMessage = model.unreadMessage
   }
 }

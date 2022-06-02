@@ -1,55 +1,25 @@
-const { Message } = require('../../models/userModel')
-
-let messages = {}
-let rooms = {}
+const { loadMessages, sendMsg, setMsgToUnread } = require('../services/message.service')
+const { findConnectedUser } = require('../services/room.service')
 
 module.exports = function messageHandlers(io, socket) {
-  const { roomId, userName, recipientUserName } = socket
-
-  const updateMessageList = () => {
-    io.to(roomId).emit('message_list:update', messages[roomId])
-  }
-
-  const updateRoomsList = () => {
-    io.emit('rooms_list:update', rooms)
-  }
-
-  socket.on('message:get', async () => {
+  socket.on('messages:get', async ({ userId, messagesWith }) => {
     try {
-      messages[roomId] = await Message.findAll({ where: { roomId } })
-      console.log(messages[roomId])
-
-      updateMessageList()
+      const { chat, error } = await loadMessages(userId, messagesWith)
+      !error ? socket.emit('message_list:update', { chat }) : socket.emit('chat:notFound')
     } catch (e) {
       console.log(e)
     }
   })
 
-  socket.on('rooms:get', async () => {
-    try {
-      rooms = await Message.findAll({ where: { userName } })
-      updateRoomsList()
-    } catch (e) {
-      console.log(e)
+  socket.on('message:add', async ({ userId, msgSendToUserId, message }) => {
+    const { newMessage, error } = await sendMsg(userId, msgSendToUserId, message)
+    const receiverSocket = await findConnectedUser(msgSendToUserId)
+
+    if (receiverSocket) {
+      io.to(receiverSocket.socketId).emit('message:received', { newMessage })
+    } else {
+      await setMsgToUnread(msgSendToUserId)
     }
-  })
-
-  socket.on('message:add', (to, message) => {
-    Message.create(message)
-
-    messages[roomId].push(message)
-
-    updateMessageList()
-    updateRoomsList()
-  })
-
-  socket.on('message:remove', (message) => {
-    const { id } = message
-
-    Message.destroy({ where: { id } }).then(() => {
-      messages[roomId] = messages[roomId].filter((m) => m.id !== id)
-    })
-
-    updateMessageList()
+    !error && socket.emit('messages:sent', { newMessage })
   })
 }

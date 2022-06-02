@@ -1,5 +1,5 @@
-const Level = require('../models/levelModel')
-const ApiError = require('../error/ApiError')
+const Level = require('../models/level.model')
+const ApiError = require('../error/api.error')
 
 class LevelController {
   async append(req, res, next) {

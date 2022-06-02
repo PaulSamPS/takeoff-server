@@ -7,10 +7,10 @@ const router = require('./routes/index')
 const path = require('path')
 const fileUpload = require('express-fileupload')
 const cookieParser = require('cookie-parser')
-const errorHandler = require('./middleware/errorHandlingMiddleware')
+const errorHandler = require('./middleware/error.middleware')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
-const onConnection = require('./socketIo/onConnection')
+const connection = require('./socketIo/connection')
 
 const PORT = process.env.PORT || 4000
 
@@ -31,7 +31,7 @@ app.use('/api', router)
 app.use(errorHandler)
 
 io.on('connection', (socket) => {
-  onConnection(io, socket)
+  connection(io, socket)
 })
 
 const start = async () => {

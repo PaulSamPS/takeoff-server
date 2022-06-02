@@ -1,10 +1,11 @@
-const User = require('../models/userModel')
-const ApiError = require('../error/ApiError')
-const tokenService = require('./token-service')
-const UserDto = require('./dtos')
+const User = require('../models/user.model')
+const ApiError = require('../error/api.error')
+const tokenService = require('./token.service')
+const UserDto = require('../dto/user.dto')
 const bcrypt = require('bcrypt')
 const uuid = require('uuid')
 const path = require('path')
+const Chat = require('../models/chat.model')
 
 class UserService {
   async registration(name, email, position, level, password, next) {
@@ -40,7 +41,7 @@ class UserService {
   }
 
   async login(name, password, next) {
-    const user = await User.findOne({ name: name })
+    const user = await User.findOne({ name: name }).select('+password')
     if (!user) {
       return next(ApiError.internal('Неверный логин'))
     }
@@ -48,9 +49,11 @@ class UserService {
     if (!comparePassword) {
       return next(ApiError.internal('Неверный пароль'))
     }
-    const userDto = new UserDto(user)
-    const tokens = tokenService.generateTokens({ ...userDto })
 
+    const userDto = new UserDto(user)
+    await Chat.create({ user: userDto.id, chats: [] })
+
+    const tokens = tokenService.generateTokens({ ...userDto })
     await tokenService.saveToken(userDto.id, tokens.refreshToken)
     return { ...tokens, user: userDto }
   }
