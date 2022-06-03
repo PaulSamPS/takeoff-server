@@ -3,12 +3,8 @@ const { findConnectedUser } = require('../services/room.service')
 
 module.exports = function messageHandlers(io, socket) {
   socket.on('messages:get', async ({ userId, messagesWith }) => {
-    try {
-      const { chat, error } = await loadMessages(userId, messagesWith)
-      !error ? socket.emit('message_list:update', { chat }) : socket.emit('chat:notFound')
-    } catch (e) {
-      console.log(e)
-    }
+    const { chat, error } = await loadMessages(userId, messagesWith)
+    !error ? socket.emit('message_list:update', { chat }) : socket.emit('chat:notFound')
   })
 
   socket.on('message:add', async ({ userId, msgSendToUserId, message }) => {

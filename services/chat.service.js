@@ -4,18 +4,18 @@ const ApiError = require('../error/api.error')
 class ChatService {
   async getAll(userId) {
     const user = await Chat.findOne({ user: userId }).populate('chats.messagesWith')
-
     let chatsToBeSent = []
 
     if (user.chats.length > 0) {
       chatsToBeSent = user.chats.map((chat) => ({
         messagesWith: chat.messagesWith._id,
         name: chat.messagesWith.name,
-        avtar: chat.messagesWith.avatar,
-        lastMessage: chat.messages[chat.messages.length - 1].msg,
+        avatar: chat.messagesWith.avatar,
+        lastMessage: chat.messages[chat.messages.length - 1].message,
         date: chat.messages[chat.messages.length - 1].date,
       }))
     }
+
     return chatsToBeSent
   }
 

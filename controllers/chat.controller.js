@@ -7,9 +7,9 @@ class ChatController {
   async getAll(req, res, next) {
     try {
       const { userId } = req.params
-      const chatsToBeSent = await chatService.getAll(userId, next)
-      console.log(chatsToBeSent)
+      const chatsToBeSent = await chatService.getAll(userId)
 
+      console.log(chatsToBeSent)
       return res.json(chatsToBeSent)
     } catch (error) {
       return next(ApiError.internal(error))
