@@ -4,11 +4,13 @@ module.exports = function userHandlers(io, socket) {
   socket.on('user:add', async ({ userId }) => {
     const users = await addUser(userId, socket.id)
 
+    const fiveMinutes = 5 * 60 * 1000
+
     setInterval(() => {
       socket.emit('user_list:update', {
         users: users.filter((user) => user.userId !== userId),
       })
-    }, 10000)
+    }, fiveMinutes)
   })
 
   socket.on('disconect', () => removeUser(socket.id))

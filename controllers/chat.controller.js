@@ -9,7 +9,6 @@ class ChatController {
       const { userId } = req.params
       const chatsToBeSent = await chatService.getAll(userId)
 
-      console.log(chatsToBeSent)
       return res.json(chatsToBeSent)
     } catch (error) {
       return next(ApiError.internal(error))

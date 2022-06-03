@@ -5,11 +5,6 @@ const loadMessages = async (userId, messagesWith) => {
   try {
     const user = await Chat.findOne({ user: userId }).populate('chats.messagesWith')
 
-    const chat = user.chats.find((chat) => chat.messagesWith._id.toString() === messagesWith)
-    if (!chat) {
-      return { error: 'Чат не найден' }
-    }
-
     let chatsToBeSent = []
 
     if (user.chats.length > 0) {
@@ -20,6 +15,11 @@ const loadMessages = async (userId, messagesWith) => {
         lastMessage: chat.messages[chat.messages.length - 1].message,
         date: chat.messages[chat.messages.length - 1].date,
       }))
+    }
+
+    const chat = user.chats.find((chat) => chat.messagesWith._id.toString())
+    if (!chat) {
+      return { error: 'Чат не найден' }
     }
 
     return { chat, chatsToBeSent }
