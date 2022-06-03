@@ -9,7 +9,20 @@ const loadMessages = async (userId, messagesWith) => {
     if (!chat) {
       return { error: 'Чат не найден' }
     }
-    return { chat }
+
+    let chatsToBeSent = []
+
+    if (user.chats.length > 0) {
+      chatsToBeSent = user.chats.map((chat) => ({
+        messagesWith: chat.messagesWith._id,
+        name: chat.messagesWith.name,
+        avatar: chat.messagesWith.avatar,
+        lastMessage: chat.messages[chat.messages.length - 1].message,
+        date: chat.messages[chat.messages.length - 1].date,
+      }))
+    }
+
+    return { chat, chatsToBeSent }
   } catch (error) {
     console.log(error)
     return { error }
