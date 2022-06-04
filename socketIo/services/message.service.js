@@ -17,7 +17,7 @@ const loadMessages = async (userId, messagesWith) => {
       }))
     }
 
-    const chat = user.chats.find((chat) => chat.messagesWith._id.toString())
+    const chat = user.chats.find((chat) => chat.messagesWith._id.toString() === messagesWith)
     if (!chat) {
       return { error: 'Чат не найден' }
     }
