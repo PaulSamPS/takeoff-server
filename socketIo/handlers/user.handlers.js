@@ -13,7 +13,7 @@ module.exports = function userHandlers(io, socket) {
 
     setInterval(() => {
       socket.emit('user_list:update', {
-        users: users.filter((user) => user.userId !== userId),
+        users,
       })
     }, 3000)
   })
