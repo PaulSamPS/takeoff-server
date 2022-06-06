@@ -1,15 +1,32 @@
-const { addUser, removeUser } = require('../services/room.service')
+const { addUser, removeUser, loginSocket, logoutUser, userOnline } = require('../services/room.service')
 
 module.exports = function userHandlers(io, socket) {
+  socket.on('login', async ({ name, password }) => {
+    const userData = await loginSocket(name, password)
+    socket.emit('login:success', { accessToken: userData.accessToken, user: userData.user })
+  })
   socket.on('user:add', async ({ userId }) => {
-    const users = await addUser(userId, socket.id)
+    const { users, userDb } = await addUser(userId, socket.id)
+    userDb.isOnline = true
+    userDb.save()
 
     setInterval(() => {
       socket.emit('user_list:update', {
         users: users.filter((user) => user.userId !== userId),
       })
-    }, 5000)
+    }, 3000)
   })
 
-  socket.on('disconnect', () => removeUser(socket.id))
+  socket.on('user:online', (users) => {
+    userOnline(users)
+  })
+
+  socket.on('logout', async ({ userId }) => {
+    await logoutUser(userId)
+  })
+
+  socket.on('disconnect', () => {
+    console.log('disc')
+    removeUser(socket.id)
+  })
 }

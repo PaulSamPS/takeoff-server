@@ -7,6 +7,9 @@ module.exports = class UserDto {
   role
   avatar
   unreadMessage
+  countUnreadMessages
+  lastVisit
+  isOnline
   constructor(model) {
     this.id = model.id
     this.name = model.name
@@ -16,5 +19,8 @@ module.exports = class UserDto {
     this.role = model.role
     this.avatar = model.avatar
     this.unreadMessage = model.unreadMessage
+    this.countUnreadMessages = model.countUnreadMessages
+    this.lastVisit = model.lastVisit
+    this.isOnline = model.isOnline
   }
 }

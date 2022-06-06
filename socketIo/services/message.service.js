@@ -12,6 +12,7 @@ const loadMessages = async (userId, messagesWith) => {
         messagesWith: chat.messagesWith._id,
         name: chat.messagesWith.name,
         avatar: chat.messagesWith.avatar,
+        isOnline: chat.messagesWith.isOnline,
         lastMessage: chat.messages[chat.messages.length - 1].message,
         date: chat.messages[chat.messages.length - 1].date,
       }))
@@ -77,10 +78,9 @@ const setMsgToUnread = async (userId) => {
   try {
     const user = await User.findById(userId)
 
-    if (!user.unreadMessage) {
-      user.unreadMessage = true
-      await user.save()
-    }
+    user.unreadMessage = true
+    user.countUnreadMessages += 1
+    user.save()
 
     return
   } catch (error) {

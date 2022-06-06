@@ -1,18 +1,59 @@
+const User = require('../../models/user.model')
+const bcrypt = require('bcrypt')
+const UserDto = require('../../dto/user.dto')
+const Chat = require('../../models/chat.model')
+const tokenService = require('../../services/token.service')
 const users = []
+
+const loginSocket = async (name, password) => {
+  const user = await User.findOne({ name: name }).select('+password')
+  if (!user) {
+    return { error: 'Неверный логин' }
+  }
+  if (user) {
+    user.isOnline = true
+    user.save()
+  }
+
+  let comparePassword = await bcrypt.compareSync(password, user.password)
+  if (!comparePassword) {
+    return { error: 'Неверный пароль' }
+  }
+
+  const userDto = new UserDto(user)
+  await new Chat({ user: userDto.id, chats: [] }).save()
+
+  const tokens = tokenService.generateTokens({ ...userDto })
+  return { ...tokens, user: userDto }
+}
 
 const addUser = async (userId, socketId) => {
   const user = users.find((user) => user.userId === userId)
+  const userDb = await User.findById(userId)
 
   if (user && user.socketId === socketId) {
-    return users
+    return { users, userDb }
   } else {
     if (user && user.socketId !== socketId) {
       await removeUser(user.socketId)
     }
     const newUser = { userId, socketId }
     users.push(newUser)
-    return users
+    return { users, userDb }
   }
+}
+
+const logoutUser = async (userId) => {
+  const userBD = await User.findById({ _id: userId })
+
+  if (userBD) {
+    userBD.isOnline = false
+    userBD.save()
+  }
+}
+
+const userOnline = (user) => {
+  user.forEach((u) => console.log(u))
 }
 
 const removeUser = (socketId) => {
@@ -23,4 +64,4 @@ const removeUser = (socketId) => {
 
 const findConnectedUser = (userId) => users.find((user) => user.userId === userId)
 
-module.exports = { addUser, removeUser, findConnectedUser }
+module.exports = { addUser, removeUser, findConnectedUser, loginSocket, logoutUser, userOnline }

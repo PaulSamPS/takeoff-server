@@ -10,6 +10,9 @@ const UserSchema = new Schema(
     role: { type: String, default: 'user' },
     avatar: { type: String, default: null },
     unreadMessage: { type: Boolean, default: false },
+    countUnreadMessages: { type: Number, default: 0 },
+    lastVisit: { type: Date, default: null },
+    isOnline: { type: Boolean, default: false },
   },
   { timestamps: true }
 )

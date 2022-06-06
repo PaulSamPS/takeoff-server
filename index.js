@@ -1,12 +1,10 @@
 require('dotenv').config()
 const express = require('express')
 const connectDb = require('./db')
-// const sequelize = require('./db')
 const cors = require('cors')
 const router = require('./routes/index')
 const path = require('path')
 const fileUpload = require('express-fileupload')
-const cookieParser = require('cookie-parser')
 const errorHandler = require('./middleware/error.middleware')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
@@ -17,7 +15,6 @@ const PORT = process.env.PORT || 4000
 const app = express()
 const httpServer = createServer(app)
 const io = new Server(httpServer, { cors: { origin: process.env.CLIENT_URL } })
-app.use(cookieParser(process.env.SECRET_COOKIE))
 app.use(
   cors({
     credentials: true,
