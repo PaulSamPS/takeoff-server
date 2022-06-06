@@ -35,7 +35,7 @@ const addUser = async (userId, socketId) => {
     return { users, userDb }
   } else {
     if (user && user.socketId !== socketId) {
-      await removeUser(user.socketId)
+      removeUser(user.socketId)
     }
     const newUser = { userId, socketId }
     users.push(newUser)
@@ -52,13 +52,17 @@ const logoutUser = async (userId) => {
   }
 }
 
-const userOnline = (user) => {
-  user.forEach((u) => console.log(u))
+const userOnline = (userId, socketId) => {
+  const user = users.find((user) => user.userId === userId)
+
+  if (user.socketId === socketId) {
+    removeUser(user.socketId)
+  }
+  return { users }
 }
 
 const removeUser = (socketId) => {
   const indexOf = users.map((user) => user.socketId).indexOf(socketId)
-
   users.splice(indexOf, 1)
 }
 
