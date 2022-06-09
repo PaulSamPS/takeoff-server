@@ -17,7 +17,7 @@ module.exports = function messageHandlers(io, socket) {
     if (receiverSocket) {
       io.to(receiverSocket.socketId).emit('message:received', { newMessage })
     } else {
-      await setMsgToUnread(msgSendToUserId)
+       await setMsgToUnread(msgSendToUserId, userId, message)
     }
     !error && socket.emit('messages:sent', { newMessage })
   })

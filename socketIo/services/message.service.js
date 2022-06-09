@@ -74,11 +74,18 @@ const sendMsg = async (userId, msgSendToUserId, message) => {
   }
 }
 
-const setMsgToUnread = async (userId) => {
+const setMsgToUnread = async (userId, msgSendToUserId, message) => {
   try {
     const user = await User.findById(userId)
 
-    user.unreadMessage = true
+    let newMessage = {
+      sender: userId,
+      receiver: msgSendToUserId,
+      message,
+      date: Date.now(),
+    }
+
+    user.unreadMessage.push(newMessage)
     user.countUnreadMessages += 1
     user.save()
 

@@ -61,11 +61,20 @@ const userOnline = (userId, socketId) => {
   return { users }
 }
 
-const removeUser = (socketId) => {
+const getUser = async (userId) => {
+  const user = await User.findById(userId)
+  return {user}
+}
+
+const removeUser = async (socketId) => {
+  const userId = users.find((user) => user.socketId === socketId);
+  const lastVisit = await User.findOne(userId)
+  lastVisit.lastVisit = Date.now();
+  lastVisit.save();
   const indexOf = users.map((user) => user.socketId).indexOf(socketId)
   users.splice(indexOf, 1)
 }
 
 const findConnectedUser = (userId) => users.find((user) => user.userId === userId)
 
-module.exports = { addUser, removeUser, findConnectedUser, loginSocket, logoutUser, userOnline }
+module.exports = { addUser, removeUser, findConnectedUser, loginSocket, logoutUser, userOnline , getUser}

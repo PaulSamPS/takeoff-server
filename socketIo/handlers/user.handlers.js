@@ -1,4 +1,4 @@
-const { addUser, removeUser, loginSocket, logoutUser, userOnline } = require('../services/room.service')
+const { addUser, removeUser, loginSocket, getUser, userOnline } = require('../services/room.service')
 
 module.exports = function userHandlers(io, socket) {
   // socket.on('login', async ({ name, password }) => {
@@ -22,6 +22,11 @@ module.exports = function userHandlers(io, socket) {
     userOnline(users)
   })
 
+  socket.on('userInfo: get', async ({userId}) => {
+    const {user} = await getUser(userId)
+    socket.emit('userInfo:user', {user})
+  })
+
   socket.on('logout', ({ userId }) => {
     const { users } = userOnline(userId, socket.id)
 
@@ -30,7 +35,7 @@ module.exports = function userHandlers(io, socket) {
     })
   })
 
-  socket.on('disconnect', () => {
-    removeUser(socket.id)
+  socket.on('disconnect', async () => {
+   await removeUser(socket.id)
   })
 }
