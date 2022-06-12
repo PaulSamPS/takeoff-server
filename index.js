@@ -6,6 +6,7 @@ const router = require('./routes/index')
 const path = require('path')
 const fileUpload = require('express-fileupload')
 const errorHandler = require('./middleware/error.middleware')
+const cookieParser = require('cookie-parser')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
 const connection = require('./socketIo/connection')
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 4000
 const app = express()
 const httpServer = createServer(app)
 const io = new Server(httpServer, { cors: { origin: process.env.CLIENT_URL } })
+app.use(cookieParser(process.env.SECRET_COOKIE))
 app.use(
   cors({
     credentials: true,
