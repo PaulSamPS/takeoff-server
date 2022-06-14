@@ -22,9 +22,9 @@ module.exports = function userHandlers(io, socket) {
     userOnline(users)
   })
 
-  socket.on('userInfo: get', async ({userId}) => {
-    const {user} = await getUser(userId)
-    socket.emit('userInfo:user', {user})
+  socket.on('userInfo:get', async ({ userId }) => {
+    const { user } = await getUser(userId)
+    socket.emit('userInfo:user', { user })
   })
 
   socket.on('logout', ({ userId }) => {
@@ -36,6 +36,6 @@ module.exports = function userHandlers(io, socket) {
   })
 
   socket.on('disconnect', async () => {
-   await removeUser(socket.id)
+    await removeUser(socket.id)
   })
 }
