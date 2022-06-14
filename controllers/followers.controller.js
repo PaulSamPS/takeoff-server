@@ -1,5 +1,6 @@
 const Followers = require('../models/followers.model')
 const ApiError = require('../error/api.error')
+const FollowersUserDto = require("../dto/followerrsUser.dto");
 
 class FollowersController {
     async folow(req, res, next) {
@@ -77,6 +78,22 @@ class FollowersController {
             await userToUnfollow.save();
 
             return res.status(200).send("Обновлено");
+        } catch (error) {
+            console.error(error);
+            return next(ApiError.forbidden('Что-то пошло не так'))
+        }
+    }
+
+    async followers(req, res, next) {
+        try {
+            const { userId } = req.params;
+
+            const user = await Followers.findOne({ user: userId }).populate("followers.user");
+           const followersUser = user.followers.map(e => {
+                return new FollowersUserDto(e.user)
+                }
+            )
+            return res.json(followersUser)
         } catch (error) {
             console.error(error);
             return next(ApiError.forbidden('Что-то пошло не так'))
