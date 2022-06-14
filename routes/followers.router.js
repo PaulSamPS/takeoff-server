@@ -6,5 +6,6 @@ const auth = require('../middleware/auth.middleware')
 router.post('/follow/:userToFollowId', followersController.folow)
 router.post('/unfollow/:userToUnfollowId', followersController.unfollow)
 router.get('/followers/:userId', followersController.followers)
+router.get('/followings/:userId', followersController.followings)
 
 module.exports = router
