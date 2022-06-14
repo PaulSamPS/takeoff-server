@@ -6,7 +6,7 @@ const FollowerSchema = new Schema(
 
         followers: [
             {
-                user: { type: Schema.Types.ObjectId, ref: 'User' }
+                user: { type: Schema.Types.ObjectId , ref: 'User' }
             }
         ],
 

@@ -1,4 +1,5 @@
 const User = require('../models/user.model')
+const Followers = require('../models/followers.model')
 const ApiError = require('../error/api.error')
 const tokenService = require('./token.service')
 const UserDto = require('../dto/user.dto')
@@ -52,6 +53,7 @@ class UserService {
 
     const userDto = new UserDto(user)
     await new Chat({ user: userDto.id, chats: [] }).save()
+    await new Followers({ user: user._id, followers: [], following: [] }).save();
 
     const tokens = tokenService.generateTokens({ ...userDto })
     await tokenService.saveToken(userDto.id, tokens.refreshToken)
