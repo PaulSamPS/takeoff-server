@@ -11,6 +11,6 @@ router.use('/user', userRouter)
 router.use('/position', positionRouter)
 router.use('/level', levelRouter)
 router.use('/chat', chatRouter)
-router.use('/follow', followRouter)
+router.use('/followers', followRouter)
 
 module.exports = router
