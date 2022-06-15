@@ -34,4 +34,27 @@ const follow = async (userId, userToFollowId) => {
   return { followersUser }
 }
 
-module.exports = { followersGet, follow }
+const unfollow = async (userId, userToUnfollowId) => {
+  const user = await Followers.findOne({
+    user: userId,
+  })
+
+  const userToUnfollow = await Followers.findOne({
+    user: userToUnfollowId,
+  })
+
+  const isFollowing =
+    user.following.length > 0 && user.following.filter((following) => following.user.toString() === userToUnfollowId).length === 0
+
+  const removeFollowing = await user.following.map((following) => following.user.toString()).indexOf(userToUnfollowId)
+
+  user.following.splice(removeFollowing, 1)
+  await user.save()
+
+  const removeFollower = await userToUnfollow.followers.map((follower) => follower.user.toString()).indexOf(userId)
+
+  userToUnfollow.followers.splice(removeFollower, 1)
+  await userToUnfollow.save()
+}
+
+module.exports = { followersGet, follow, unfollow }

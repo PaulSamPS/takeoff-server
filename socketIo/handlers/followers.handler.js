@@ -1,4 +1,4 @@
-const { followersGet, follow } = require('../services/followers.service')
+const { followersGet, follow, unfollow } = require('../services/followers.service')
 module.exports = function followersHandlers(io, socket) {
   const sent = (followersUser) => {
     socket.emit('followers:sent', { followersUser })
@@ -13,6 +13,14 @@ module.exports = function followersHandlers(io, socket) {
     await follow(userId, userToFollowId)
     const { followersUser } = await followersGet(userId)
 
-    socket.emit('follow:done', { followersUser })
+    io.emit('follow:done', { followersUser })
+  })
+
+  socket.on('unfollow', async ({ userId, userToUnfollowId }) => {
+    await unfollow(userId, userToUnfollowId)
+
+    const { followersUser } = await followersGet(userId)
+
+    io.emit('follow:done', { followersUser })
   })
 }
