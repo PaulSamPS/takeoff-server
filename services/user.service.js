@@ -53,7 +53,7 @@ class UserService {
 
     const userDto = new UserDto(user)
     await new Chat({ user: userDto.id, chats: [] }).save()
-    await new Followers({ user: user._id, followers: [], following: [] }).save();
+    await new Followers({ user: user._id, followers: [], following: [], friends: [] }).save()
 
     const tokens = tokenService.generateTokens({ ...userDto })
     await tokenService.saveToken(userDto.id, tokens.refreshToken)

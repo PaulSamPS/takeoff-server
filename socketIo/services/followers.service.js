@@ -2,14 +2,29 @@ const Followers = require('../../models/followers.model')
 const FollowersUserDto = require('../../dto/followerrsUser.dto')
 const ApiError = require('../../error/api.error')
 
-const followersGet = async (userId) => {
-  const user = await Followers.findOne({ user: userId }).populate('following.user')
+const friendsGet = async (userId) => {
+  const folUser = await Followers.findOne({ user: userId }).populate('following.user')
 
-  let followersUser = user.following.map((e) => {
+  let followersUser = folUser.following.map((e) => {
     return new FollowersUserDto(e.user)
   })
 
   return { followersUser }
+}
+
+const followersGet = async (userId) => {
+  const user = await Followers.findOne({ user: userId }).populate('following.user')
+  const folUser = await Followers.findOne({ user: userId }).populate('followers.user')
+
+  let followingsUser = user.following.map((e) => {
+    return new FollowersUserDto(e.user)
+  })
+
+  let followersUser = folUser.followers.map((e) => {
+    return new FollowersUserDto(e.user)
+  })
+
+  return { followingsUser, followersUser }
 }
 
 const follow = async (userId, userToFollowId) => {
@@ -29,9 +44,10 @@ const follow = async (userId, userToFollowId) => {
   await userToFollow.followers.unshift({ user: userId })
   await userToFollow.save()
 
-  let followersUser = user.following
+  let followingsUser = user.following
+  let followersUser = user.followers
 
-  return { followersUser }
+  return { followingsUser, followersUser }
 }
 
 const unfollow = async (userId, userToUnfollowId) => {
@@ -57,4 +73,25 @@ const unfollow = async (userId, userToUnfollowId) => {
   await userToUnfollow.save()
 }
 
-module.exports = { followersGet, follow, unfollow }
+const addToFriends = async (userId, userToFriendId) => {
+  const user = await Followers.findOne({ user: userId })
+  const userToFriend = await Followers.findOne({ user: userToFriendId })
+
+  const isFriend = user.friends.length > 0 && user.friends.filter((following) => following.user.toString() === userToFriendId).length > 0
+
+  if (isFriend) {
+    return console.log('Пользователь уже в друзьях')
+  }
+
+  await user.friends.unshift({ user: userToFriendId })
+  await user.save()
+
+  await userToFriend.friends.unshift({ user: userId })
+  await userToFriend.save()
+
+  let userFriends = user.friends
+
+  return { userFriends }
+}
+
+module.exports = { followersGet, follow, unfollow, addToFriends, friendsGet }
