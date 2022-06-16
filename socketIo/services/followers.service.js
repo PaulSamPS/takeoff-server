@@ -2,7 +2,7 @@ const Followers = require('../../models/followers.model')
 const FollowersUserDto = require('../../dto/followerrsUser.dto')
 const ApiError = require('../../error/api.error')
 
-const friendsGet = async (userId) => {
+const friendsRequestGet = async (userId) => {
   const folUser = await Followers.findOne({ user: userId }).populate('following.user')
 
   let followersUser = folUser.following.map((e) => {
@@ -10,6 +10,16 @@ const friendsGet = async (userId) => {
   })
 
   return { followersUser }
+}
+
+const friendsGet = async (userId) => {
+  const user = await Followers.findOne({ user: userId }).populate('friends.user')
+
+  let friendsUser = user.friends.map((e) => {
+    return new FollowersUserDto(e.user)
+  })
+
+  return { friendsUser }
 }
 
 const followersGet = async (userId) => {
@@ -80,7 +90,7 @@ const addToFriends = async (userId, userToFriendId) => {
   const isFriend = user.friends.length > 0 && user.friends.filter((following) => following.user.toString() === userToFriendId).length > 0
 
   if (isFriend) {
-    return console.log('Пользователь уже в друзьях')
+    return { userFriends: user.friends }
   }
 
   await user.friends.unshift({ user: userToFriendId })
@@ -94,4 +104,4 @@ const addToFriends = async (userId, userToFriendId) => {
   return { userFriends }
 }
 
-module.exports = { followersGet, follow, unfollow, addToFriends, friendsGet }
+module.exports = { followersGet, follow, unfollow, addToFriends, friendsRequestGet, friendsGet }
