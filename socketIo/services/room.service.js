@@ -5,28 +5,6 @@ const Chat = require('../../models/chat.model')
 const tokenService = require('../../services/token.service')
 const users = []
 
-const loginSocket = async (name, password) => {
-  const user = await User.findOne({ name: name }).select('+password')
-  if (!user) {
-    return { error: 'Неверный логин' }
-  }
-  if (user) {
-    user.isOnline = true
-    user.save()
-  }
-
-  let comparePassword = await bcrypt.compareSync(password, user.password)
-  if (!comparePassword) {
-    return { error: 'Неверный пароль' }
-  }
-
-  const userDto = new UserDto(user)
-  await new Chat({ user: userDto.id, chats: [] }).save()
-
-  const tokens = tokenService.generateTokens({ ...userDto })
-  return { ...tokens, user: userDto }
-}
-
 const addUser = async (userId, socketId) => {
   const user = users.find((user) => user.userId === userId)
   const userDb = await User.findById(userId)
@@ -55,7 +33,7 @@ const logoutUser = async (userId) => {
 const userOnline = (userId, socketId) => {
   const user = users.find((user) => user.userId === userId)
 
-  if (user.socketId === socketId) {
+  if (user === socketId) {
     removeUser(user.socketId)
   }
   return { users }
@@ -63,15 +41,15 @@ const userOnline = (userId, socketId) => {
 
 const getUser = async (userId) => {
   const user = await User.findById(userId)
-  return {user}
+  return { user }
 }
 
 const removeUser = async (socketId) => {
-  const userId = users.find((user) => user.socketId === socketId);
+  const userId = users.find((user) => user.socketId === socketId)
   if (userId) {
     const lastVisit = await User.findById(userId.userId)
-    lastVisit.lastVisit = Date.now();
-    lastVisit.save();
+    lastVisit.lastVisit = Date.now()
+    lastVisit.save()
   }
   const indexOf = users.map((user) => user.socketId).indexOf(socketId)
   users.splice(indexOf, 1)
@@ -79,4 +57,4 @@ const removeUser = async (socketId) => {
 
 const findConnectedUser = (userId) => users.find((user) => user.userId === userId)
 
-module.exports = { addUser, removeUser, findConnectedUser, loginSocket, logoutUser, userOnline , getUser}
+module.exports = { addUser, removeUser, findConnectedUser, logoutUser, userOnline, getUser }

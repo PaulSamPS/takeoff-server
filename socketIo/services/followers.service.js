@@ -4,12 +4,11 @@ const ApiError = require('../../error/api.error')
 
 const friendsRequestGet = async (userId) => {
   const folUser = await Followers.findOne({ user: userId }).populate('following.user')
-
-  let followersUser = folUser.following.map((e) => {
+  let followingsUser = folUser.following.map((e) => {
     return new FollowersUserDto(e.user)
   })
 
-  return { followersUser }
+  return { followingsUser }
 }
 
 const friendsGet = async (userId) => {
@@ -53,11 +52,6 @@ const follow = async (userId, userToFollowId) => {
 
   await userToFollow.followers.unshift({ user: userId })
   await userToFollow.save()
-
-  let followingsUser = user.following
-  let followersUser = user.followers
-
-  return { followingsUser, followersUser }
 }
 
 const unfollow = async (userId, userToUnfollowId) => {

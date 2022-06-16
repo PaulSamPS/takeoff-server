@@ -1,11 +1,6 @@
-const { addUser, removeUser, loginSocket, getUser, userOnline } = require('../services/room.service')
+const { addUser, removeUser, getUser, userOnline } = require('../services/room.service')
 
 module.exports = function userHandlers(io, socket) {
-  // socket.on('login', async ({ name, password }) => {
-  //   const userData = await loginSocket(name, password)
-  //   socket.emit('login:success', { accessToken: userData.accessToken, user: userData.user })
-  // })
-
   socket.on('user:add', async ({ userId }) => {
     const { users, userDb } = await addUser(userId, socket.id)
     userDb.isOnline = true
