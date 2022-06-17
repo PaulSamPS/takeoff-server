@@ -45,6 +45,16 @@ class ChatController {
     }
   }
 
+  async setMessageUnread(req, res) {
+    const { withId } = req.params
+    const { id } = req.body
+    const user = await Chat.findOne({ user: withId }).populate('chats.messagesWith')
+    const chatTo = user.chats.find((chat) => chat.messagesWith._id.toString() === id)
+
+    chatTo.countUnreadMessages += 1
+    user.save()
+  }
+
   async messagesRead(req, res) {
     const { withId } = req.params
     const { id } = req.body

@@ -32,6 +32,6 @@ module.exports = function followersHandlers(io, socket) {
 
   socket.on('friends:get', async ({ userId }) => {
     const { friendsUser } = await friendsGet(userId)
-    socket.emit('friends:set', { friendsUser })
+    io.emit('friends:set', { friendsUser })
   })
 }
