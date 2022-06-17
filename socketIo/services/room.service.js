@@ -33,7 +33,7 @@ const logoutUser = async (userId) => {
 const userOnline = (userId, socketId) => {
   const user = users.find((user) => user.userId === userId)
 
-  if (user.socketId === socketId) {
+  if (user) {
     removeUser(user.socketId)
   }
   return { users }
