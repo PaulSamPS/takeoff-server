@@ -5,5 +5,6 @@ const chatController = require('../controllers/chat.controller')
 router.get('/:userId', chatController.getAll)
 router.get('/user/:id', chatController.getChatUser)
 router.delete('/:messagesWith', chatController.deleteChat)
+router.post('/messages-read/:withId', chatController.messagesRead)
 
 module.exports = router

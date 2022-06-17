@@ -5,7 +5,7 @@ const Chat = require('../../models/chat.model')
 
 module.exports = function messageHandlers(io, socket) {
   socket.on('messages:get', async ({ userId, messagesWith }) => {
-    const { chat, chatsToBeSent, error } = await loadMessages(userId, messagesWith)
+    const { chat, error } = await loadMessages(userId, messagesWith)
     !error ? socket.emit('message_list:update', { chat }) : socket.emit('chat:notFound')
   })
 
@@ -16,7 +16,7 @@ module.exports = function messageHandlers(io, socket) {
     if (receiverSocket) {
       io.to(receiverSocket.socketId).emit('message:received', { newMessage })
     } else {
-       await setMsgToUnread(msgSendToUserId, userId, message)
+      await setMsgToUnread(msgSendToUserId, userId, message)
     }
     !error && socket.emit('messages:sent', { newMessage })
   })
@@ -32,6 +32,7 @@ module.exports = function messageHandlers(io, socket) {
         avatar: chat.messagesWith.avatar,
         lastMessage: chat.messages[chat.messages.length - 1].message,
         date: chat.messages[chat.messages.length - 1].date,
+        countUnreadMessages: chat.countUnreadMessages,
       }))
     }
 

@@ -36,6 +36,8 @@ class UserService {
       password: hashPassword,
     })
     const userDto = new UserDto(user)
+    await new Chat({ user: userDto.id, chats: [] }).save()
+    await new Followers({ user: user._id, followers: [], following: [], friends: [] }).save()
     const tokens = tokenService.generateTokens({ ...userDto })
     await tokenService.saveToken(userDto.id, tokens.refreshToken)
     return { ...tokens, userDto }
@@ -50,10 +52,7 @@ class UserService {
     if (!comparePassword) {
       return next(ApiError.internal('Неверный пароль'))
     }
-
     const userDto = new UserDto(user)
-    await new Chat({ user: userDto.id, chats: [] }).save()
-    await new Followers({ user: user._id, followers: [], following: [], friends: [] }).save()
 
     const tokens = tokenService.generateTokens({ ...userDto })
     await tokenService.saveToken(userDto.id, tokens.refreshToken)

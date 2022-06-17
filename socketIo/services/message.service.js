@@ -4,26 +4,13 @@ const User = require('../../models/user.model')
 const loadMessages = async (userId, messagesWith) => {
   try {
     const user = await Chat.findOne({ user: userId }).populate('chats.messagesWith')
-
-    let chatsToBeSent = []
-
-    if (user.chats.length > 0) {
-      chatsToBeSent = user.chats.map((chat) => ({
-        messagesWith: chat.messagesWith._id,
-        name: chat.messagesWith.name,
-        avatar: chat.messagesWith.avatar,
-        isOnline: chat.messagesWith.isOnline,
-        lastMessage: chat.messages[chat.messages.length - 1].message,
-        date: chat.messages[chat.messages.length - 1].date,
-      }))
-    }
-
     const chat = user.chats.find((chat) => chat.messagesWith._id.toString() === messagesWith)
+
     if (!chat) {
       return { error: 'Чат не найден' }
     }
 
-    return { chat, chatsToBeSent }
+    return { chat }
   } catch (error) {
     console.log(error)
     return { error }
@@ -76,7 +63,8 @@ const sendMsg = async (userId, msgSendToUserId, message) => {
 
 const setMsgToUnread = async (userId, msgSendToUserId, message) => {
   try {
-    const user = await User.findById(userId)
+    const user = await Chat.findOne({ user: userId }).populate('chats.messagesWith')
+    const chatTo = user.chats.find((chat) => chat.messagesWith._id.toString() === msgSendToUserId)
 
     let newMessage = {
       sender: userId,
@@ -85,11 +73,9 @@ const setMsgToUnread = async (userId, msgSendToUserId, message) => {
       date: Date.now(),
     }
 
-    user.unreadMessage.push(newMessage)
-    user.countUnreadMessages += 1
+    chatTo.unreadMessages.push(newMessage)
+    chatTo.countUnreadMessages += 1
     user.save()
-
-    return
   } catch (error) {
     console.error(error)
   }

@@ -9,14 +9,14 @@ const UserSchema = new Schema(
     level: { type: String, required: true },
     role: { type: String, default: 'user' },
     avatar: { type: String, default: null },
-  unreadMessage: [
+    unreadMessage: [
       {
-          sender: {type: Schema.Types.ObjectId, ref: 'User', required: true},
-          receiver: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-          message: {type: String, required: true},
-          date: {type: Date}
-      }
-  ],
+        sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        receiver: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+        message: { type: String, required: true },
+        date: { type: Date },
+      },
+    ],
     countUnreadMessages: { type: Number, default: 0 },
     lastVisit: { type: Date, default: null },
     isOnline: { type: Boolean, default: false },

@@ -2,6 +2,7 @@ const User = require('../models/user.model')
 const ApiError = require('../error/api.error')
 const UserDto = require('../dto/user.dto')
 const chatService = require('../services/chat.service')
+const Chat = require('../models/chat.model')
 
 class ChatController {
   async getAll(req, res, next) {
@@ -42,6 +43,16 @@ class ChatController {
     } catch (error) {
       return next(ApiError.internal(error))
     }
+  }
+
+  async messagesRead(req, res) {
+    const { withId } = req.params
+    const { id } = req.body
+    const user = await Chat.findOne({ user: withId }).populate('chats.messagesWith')
+    const chatTo = user.chats.find((chat) => chat.messagesWith._id.toString() === id)
+    chatTo.unreadMessages = []
+    chatTo.countUnreadMessages = 0
+    await user.save()
   }
 }
 
