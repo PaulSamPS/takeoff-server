@@ -30,7 +30,7 @@ module.exports = function userHandlers(io, socket) {
     })
   })
 
-  socket.on('disconnect', async () => {
-    await removeUser(socket.id)
+  socket.on('disconnect', () => {
+    removeUser(socket.id)
   })
 }

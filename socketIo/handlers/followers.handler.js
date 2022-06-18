@@ -1,4 +1,5 @@
 const { followersGet, follow, unfollow, addToFriends, friendsRequestGet, friendsGet } = require('../services/followers.service')
+
 module.exports = function followersHandlers(io, socket) {
   socket.on('followings:get', async ({ userId }) => {
     const { followingsUser, followersUser } = await followersGet(userId)
