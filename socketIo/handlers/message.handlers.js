@@ -1,4 +1,4 @@
-const { loadMessages, sendMsg, setMsgToUnread } = require('../services/message.service')
+const { loadMessages, sendMsg, setMsgToUnread, deleteMessage } = require('../services/message.service')
 const { findConnectedUser } = require('../services/room.service')
 const chatService = require('../../services/chat.service')
 const Chat = require('../../models/chat.model')
@@ -16,7 +16,7 @@ module.exports = function messageHandlers(io, socket) {
     if (receiverSocket) {
       io.to(receiverSocket.socketId).emit('message:received', { newMessage })
     } else {
-      await setMsgToUnread(msgSendToUserId, userId, message)
+      await setMsgToUnread(msgSendToUserId, userId)
     }
     !error && socket.emit('messages:sent', { newMessage })
   })
@@ -37,5 +37,11 @@ module.exports = function messageHandlers(io, socket) {
     }
 
     socket.emit('chat:send', { chatsToBeSent })
+  })
+
+  socket.on('message:delete', async ({ userId, messagesWith, messageId }) => {
+    const { success } = await deleteMessage(userId, messagesWith, messageId)
+
+    if (success) socket.emit('message:deleted')
   })
 }

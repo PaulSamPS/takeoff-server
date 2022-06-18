@@ -61,36 +61,26 @@ const sendMsg = async (userId, msgSendToUserId, message) => {
   }
 }
 
-const setMsgToUnread = async (userId, msgSendToUserId, message) => {
+const setMsgToUnread = async (userId, msgSendToUserId) => {
   try {
     const user = await Chat.findOne({ user: userId }).populate('chats.messagesWith')
     const chatTo = user.chats.find((chat) => chat.messagesWith._id.toString() === msgSendToUserId)
 
-    let newMessage = {
-      sender: userId,
-      receiver: msgSendToUserId,
-      message,
-      date: Date.now(),
-    }
-
-    chatTo.unreadMessages.push(newMessage)
     chatTo.countUnreadMessages += 1
-    user.save()
+    await user.save()
   } catch (error) {
     console.error(error)
   }
 }
 
-const deleteMsg = async (userId, messagesWith, messageId) => {
+const deleteMessage = async (userId, messagesWith, messageId) => {
   try {
     const user = await Chat.findOne({ user: userId })
-
     const chat = user.chats.find((chat) => chat.messagesWith.toString() === messagesWith)
 
     if (!chat) return
 
     const messageToDelete = chat.messages.find((message) => message._id.toString() === messageId)
-
     if (!messageToDelete) return
 
     if (messageToDelete.sender.toString() !== userId) {
@@ -98,7 +88,6 @@ const deleteMsg = async (userId, messagesWith, messageId) => {
     }
 
     const indexOf = chat.messages.map((message) => message._id.toString()).indexOf(messageToDelete._id.toString())
-
     chat.messages.splice(indexOf, 1)
 
     await user.save()
@@ -109,4 +98,4 @@ const deleteMsg = async (userId, messagesWith, messageId) => {
   }
 }
 
-module.exports = { loadMessages, sendMsg, setMsgToUnread, deleteMsg }
+module.exports = { loadMessages, sendMsg, setMsgToUnread, deleteMessage }
