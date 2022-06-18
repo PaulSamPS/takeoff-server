@@ -30,6 +30,12 @@ module.exports = function followersHandlers(io, socket) {
     io.emit('friends:sent', { userFriends })
   })
 
+  socket.on('friends:reject', async ({ userId, userToRejectId }) => {
+    await unfollow(userId, userToRejectId)
+    const { followingsUser, followersUser } = await followersGet(userId)
+    io.emit('followings:done', { followingsUser, followersUser })
+  })
+
   socket.on('friends:get', async ({ userId }) => {
     const { friendsUser } = await friendsGet(userId)
     io.emit('friends:set', { friendsUser })
