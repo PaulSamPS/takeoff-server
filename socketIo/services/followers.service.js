@@ -14,9 +14,23 @@ const friendsRequestGet = async (userId) => {
 const friendsGet = async (userId) => {
   const user = await Followers.findOne({ user: userId }).populate('friends.user')
 
-  let friendsUser = user.friends.map((e) => {
-    return new FollowersUserDto(e.user)
-  })
+  let friendsUser =
+    user &&
+    user.friends.map((e) => {
+      return new FollowersUserDto(e.user)
+    })
+
+  return { friendsUser }
+}
+
+const friendsUSerInfoGet = async (userId) => {
+  const user = await Followers.findOne({ user: userId }).populate('friends.user')
+
+  let friendsUser =
+    user &&
+    user.friends.map((e) => {
+      return new FollowersUserDto(e.user)
+    })
 
   return { friendsUser }
 }
@@ -98,4 +112,4 @@ const addToFriends = async (userId, userToFriendId) => {
   return { userFriends }
 }
 
-module.exports = { followersGet, follow, unfollow, addToFriends, friendsRequestGet, friendsGet }
+module.exports = { followersGet, follow, unfollow, addToFriends, friendsRequestGet, friendsGet, friendsUSerInfoGet }

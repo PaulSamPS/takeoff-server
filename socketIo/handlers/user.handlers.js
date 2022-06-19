@@ -2,9 +2,7 @@ const { addUser, removeUser, getUser, userOnline } = require('../services/room.s
 
 module.exports = function userHandlers(io, socket) {
   socket.on('user:add', async ({ userId }) => {
-    const { users, userDb } = await addUser(userId, socket.id)
-    userDb.isOnline = true
-    userDb.save()
+    const { users } = await addUser(userId, socket.id)
 
     setInterval(() => {
       socket.emit('user_list:update', {

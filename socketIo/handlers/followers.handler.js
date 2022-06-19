@@ -1,4 +1,12 @@
-const { followersGet, follow, unfollow, addToFriends, friendsRequestGet, friendsGet } = require('../services/followers.service')
+const {
+  followersGet,
+  follow,
+  unfollow,
+  addToFriends,
+  friendsRequestGet,
+  friendsGet,
+  friendsUSerInfoGet,
+} = require('../services/followers.service')
 
 module.exports = function followersHandlers(io, socket) {
   socket.on('followings:get', async ({ userId }) => {
@@ -40,5 +48,10 @@ module.exports = function followersHandlers(io, socket) {
   socket.on('friends:get', async ({ userId }) => {
     const { friendsUser } = await friendsGet(userId)
     io.emit('friends:set', { friendsUser })
+  })
+
+  socket.on('friendsUserInfo:get', async ({ userId }) => {
+    const { friendsUser } = await friendsUSerInfoGet(userId)
+    socket.emit('friendsUserInfo:set', { friendsUser })
   })
 }
