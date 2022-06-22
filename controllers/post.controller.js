@@ -7,7 +7,7 @@ const path = require('path')
 class PostController {
   async create(req, res, next) {
     const { id, text, location } = req.body
-    const { image } = req.files
+    const { image } = req.files !== undefined && req.files
 
     try {
       const newPost = {
@@ -18,7 +18,7 @@ class PostController {
       if (image) {
         let fileName = uuid.v4() + '.jpg'
         await image.mv(path.resolve(__dirname, '..', 'static/post', fileName))
-        newPost.picUrl = fileName
+        newPost.image = fileName
       }
 
       const post = await new Post(newPost).save()

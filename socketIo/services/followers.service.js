@@ -39,13 +39,17 @@ const followersGet = async (userId) => {
   const user = await Followers.findOne({ user: userId }).populate('following.user')
   const folUser = await Followers.findOne({ user: userId }).populate('followers.user')
 
-  let followingsUser = user.following.map((e) => {
-    return new FollowersUserDto(e.user)
-  })
+  let followingsUser =
+    user &&
+    user.following.map((e) => {
+      return new FollowersUserDto(e.user)
+    })
 
-  let followersUser = folUser.followers.map((e) => {
-    return new FollowersUserDto(e.user)
-  })
+  let followersUser =
+    folUser &&
+    folUser.followers.map((e) => {
+      return new FollowersUserDto(e.user)
+    })
 
   return { followingsUser, followersUser }
 }

@@ -8,7 +8,7 @@ const PostSchema = new Schema(
 
     location: { type: String },
 
-    image: { type: String },
+    image: { type: String, default: null },
 
     likes: [{ user: { type: Schema.Types.ObjectId, ref: 'User' } }],
 

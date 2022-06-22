@@ -35,7 +35,6 @@ module.exports = function messageHandlers(io, socket) {
         countUnreadMessages: chat.countUnreadMessages,
       }))
     }
-
     socket.emit('chat:send', { chatsToBeSent })
   })
 
