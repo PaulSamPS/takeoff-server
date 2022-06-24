@@ -10,7 +10,7 @@ module.exports = function messageHandlers(io, socket) {
   })
 
   socket.on('message:add', async ({ userId, msgSendToUserId, message }) => {
-    const { newMessage, error } = await sendMsg(userId, msgSendToUserId, message)
+    const { newMessage, error, userChats } = await sendMsg(userId, msgSendToUserId, message)
     const receiverSocket = await findConnectedUser(msgSendToUserId)
 
     if (receiverSocket) {

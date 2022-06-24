@@ -53,6 +53,7 @@ const sendMsg = async (userId, msgSendToUserId, message) => {
       msgSendToUser.chats.unshift(newChat)
       await msgSendToUser.save()
     }
+
     return { newMessage }
   } catch (error) {
     console.error(error)

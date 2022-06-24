@@ -3,6 +3,7 @@ const ApiError = require('../error/api.error')
 const UserDto = require('../dto/user.dto')
 const chatService = require('../services/chat.service')
 const Chat = require('../models/chat.model')
+const {json} = require("express");
 
 class ChatController {
   async getAll(req, res, next) {
@@ -43,6 +44,24 @@ class ChatController {
     } catch (error) {
       return next(ApiError.internal(error))
     }
+  }
+
+  async getUnreadMessages(req, res) {
+    const { id } = req.params
+    const userChats = await Chat.findOne({ user: id }).populate('chats.messagesWith')
+    let chatsToBeSent = []
+
+    if (userChats.chats.length > 0) {
+      chatsToBeSent = userChats.chats.map((chat) => ({
+        messagesWith: chat.messagesWith._id,
+        name: chat.messagesWith.name,
+        avatar: chat.messagesWith.avatar,
+        lastMessage: chat.messages[chat.messages.length - 1].message,
+        date: chat.messages[chat.messages.length - 1].date,
+        countUnreadMessages: chat.countUnreadMessages,
+      }))
+    }
+    return res.json(chatsToBeSent)
   }
 
   async setMessageUnread(req, res) {
