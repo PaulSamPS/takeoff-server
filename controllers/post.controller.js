@@ -104,6 +104,65 @@ class PostController {
       return next(ApiError.badRequest('Что-то пошло не так'))
     }
   }
+
+  async unlikePost(req, res, next) {
+    try {
+      const { postId } = req.params;
+      const { userId } = req.body;
+
+      const post = await Post.findById(postId);
+      if (!post) {
+        return next(ApiError.internal('Пост не найден'))
+      }
+
+      const isLiked =
+          post.likes.filter(like => like.user.toString() === userId).length === 0;
+
+      if (isLiked) {
+        return next(ApiError.internal('Пост не быыл лайкнут'))
+      }
+
+      const index = post.likes.map(like => like.user.toString()).indexOf(userId);
+
+      await post.likes.splice(index, 1);
+
+      await post.save();
+
+      return res.status(200).send('Больше не нравится');
+    } catch (error) {
+      console.error(error);
+      return next(ApiError.badRequest('Что-то пошло не так'))
+    }
+  }
+
+  async createCommentPost(req, res, next) { try {
+    const { postId } = req.params;
+
+    const { text, userId } = req.body;
+
+    if (text.length < 1)
+      return next(ApiError.internal('Комментарий должен содержать минимум 1 символ'))
+
+    const post = await Post.findById(postId);
+
+    if (!post) return next(ApiError.internal('Пост не найден'))
+
+    const newComment = {
+      _id: uuid.v4(),
+      text,
+      user: userId,
+      date: Date.now()
+    };
+
+    await post.comments.unshift(newComment);
+    await post.save();
+
+    return res.status(200).json(newComment._id);
+  } catch (error) {
+    console.error(error);
+    return next(ApiError.badRequest('Что-то пошло не так'))
+  }}
+
 }
 
 module.exports = new PostController()
