@@ -1,5 +1,4 @@
 const Chat = require('../../models/chat.model')
-const User = require('../../models/user.model')
 
 const loadMessages = async (userId, messagesWith) => {
   try {

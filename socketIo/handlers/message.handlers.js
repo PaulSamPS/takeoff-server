@@ -10,11 +10,12 @@ module.exports = function messageHandlers(io, socket) {
   })
 
   socket.on('message:add', async ({ userId, msgSendToUserId, message }) => {
-    const { newMessage, error, userChats } = await sendMsg(userId, msgSendToUserId, message)
+    const { newMessage, error } = await sendMsg(userId, msgSendToUserId, message)
     const receiverSocket = await findConnectedUser(msgSendToUserId)
 
     if (receiverSocket) {
       io.to(receiverSocket.socketId).emit('message:received', { newMessage })
+      io.to(receiverSocket.socketId).emit('message:receivedUnread', { newMessage })
     } else {
       await setMsgToUnread(msgSendToUserId, userId)
     }

@@ -77,6 +77,33 @@ class PostController {
       return next(ApiError.badRequest('Что-т пошло не так'))
     }
   }
+
+  async likePost(req, res, next) {
+    try {
+      const { postId } = req.params;
+      const { userId } = req.body;
+
+      const post = await Post.findById(postId);
+
+      if (!post) {
+        return next(ApiError.internal('Пост не найден'))
+      }
+
+      const isLiked = post.likes.filter(like => like.user.toString() === userId).length > 0;
+
+      if (isLiked) {
+        return next(ApiError.internal('Вым уже нравится этот пост'))
+      }
+
+      await post.likes.unshift({ user: userId });
+      await post.save();
+
+      return res.status(200).send('Пост нравится');
+    } catch (error) {
+      console.error(error);
+      return next(ApiError.badRequest('Что-то пошло не так'))
+    }
+  }
 }
 
 module.exports = new PostController()

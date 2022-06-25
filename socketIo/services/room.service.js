@@ -1,9 +1,6 @@
 const User = require('../../models/user.model')
-const bcrypt = require('bcrypt')
-const UserDto = require('../../dto/user.dto')
-const Chat = require('../../models/chat.model')
-const tokenService = require('../../services/token.service')
 const users = []
+
 
 const addUser = async (userId, socketId) => {
   const user = users.find((user) => user.userId === userId)
@@ -18,15 +15,6 @@ const addUser = async (userId, socketId) => {
     const newUser = { userId, socketId }
     users.push(newUser)
     return { users, userDb }
-  }
-}
-
-const logoutUser = async (userId) => {
-  const userBD = await User.findById({ _id: userId })
-
-  if (userBD) {
-    userBD.isOnline = false
-    userBD.save()
   }
 }
 
@@ -51,4 +39,4 @@ const removeUser = (socketId) => {
 
 const findConnectedUser = (userId) => users.find((user) => user.userId === userId)
 
-module.exports = { addUser, removeUser, findConnectedUser, logoutUser, userOnline, getUser }
+module.exports = { addUser, removeUser, findConnectedUser, userOnline, getUser }

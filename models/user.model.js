@@ -9,6 +9,8 @@ const UserSchema = new Schema(
     level: { type: String, required: true },
     role: { type: String, default: 'user' },
     avatar: { type: String, default: null },
+      notification: {type: Boolean, default: false}
+
   },
   { timestamps: true }
 )
