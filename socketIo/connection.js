@@ -1,7 +1,7 @@
 const userHandlers = require('./handlers/user.handlers')
 const messageHandlers = require('./handlers/message.handlers')
 const followersHandlers = require('./handlers/followers.handler')
-const likesHandlers = require('./handlers/likesHandler')
+const postHandlers = require('./handlers/post.handler')
 
 module.exports = function onConnection(io, socket) {
   userHandlers(io, socket)
@@ -10,5 +10,5 @@ module.exports = function onConnection(io, socket) {
 
   followersHandlers(io, socket)
 
-  likesHandlers(io, socket)
+  postHandlers(io, socket)
 }

@@ -1,5 +1,7 @@
 const Post = require('../../models/post.model')
 const User = require('../../models/user.model')
+const ApiError = require('../../error/api.error')
+const uuid = require('uuid')
 
 const likeOrUnlikePost = async (postId, userId, like) => {
   try {
@@ -42,4 +44,22 @@ const likeOrUnlikePost = async (postId, userId, like) => {
   }
 }
 
-module.exports = { likeOrUnlikePost }
+const commentPost = async (postId, userId, text) => {
+  const post = await Post.findById(postId)
+
+  if (!post) return 'Пост не найден'
+
+  const newComment = {
+    _id: uuid.v4(),
+    text,
+    user: userId,
+    date: Date.now(),
+  }
+
+  await post.comments.unshift(newComment)
+  await post.save()
+
+  return { commentId: newComment._id }
+}
+
+module.exports = { likeOrUnlikePost, commentPost }

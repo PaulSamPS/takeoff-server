@@ -34,10 +34,12 @@ const getUser = async (userId) => {
 const removeUser = async (socketId) => {
   const indexOf = users.map((user) => user.socketId).indexOf(socketId)
   const lastVisitUser = users.find((user) => user.socketId === socketId)
-  const lastVisit = await User.findById(lastVisitUser.userId)
+  const lastVisit = await User.findById(lastVisitUser && lastVisitUser.userId)
+  if (lastVisit) {
+    lastVisit.lastVisit = Date.now()
+    lastVisit.save()
+  }
   users.splice(indexOf, 1)
-  lastVisit.lastVisit = Date.now()
-  lastVisit.save()
 }
 
 const findConnectedUser = (userId) => users.find((user) => user.userId === userId)
