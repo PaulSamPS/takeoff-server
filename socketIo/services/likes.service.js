@@ -2,7 +2,6 @@ const Post = require('../../models/post.model')
 const User = require('../../models/user.model')
 
 const likeOrUnlikePost = async (postId, userId, like) => {
-  console.log(like)
   try {
     const post = await Post.findById(postId)
 

@@ -1,7 +1,6 @@
 const User = require('../../models/user.model')
 const users = []
 
-
 const addUser = async (userId, socketId) => {
   const user = users.find((user) => user.userId === userId)
   const userDb = await User.findById(userId)
@@ -32,9 +31,13 @@ const getUser = async (userId) => {
   return { user }
 }
 
-const removeUser = (socketId) => {
+const removeUser = async (socketId) => {
   const indexOf = users.map((user) => user.socketId).indexOf(socketId)
+  const lastVisitUser = users.find((user) => user.socketId === socketId)
+  const lastVisit = await User.findById(lastVisitUser.userId)
   users.splice(indexOf, 1)
+  lastVisit.lastVisit = Date.now()
+  lastVisit.save()
 }
 
 const findConnectedUser = (userId) => users.find((user) => user.userId === userId)

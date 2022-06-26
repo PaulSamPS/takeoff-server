@@ -31,6 +31,7 @@ module.exports = function messageHandlers(io, socket) {
         messagesWith: chat.messagesWith._id,
         name: chat.messagesWith.name,
         avatar: chat.messagesWith.avatar,
+        lastVisit: chat.messagesWith.lastVisit,
         lastMessage: chat.messages[chat.messages.length - 1].message,
         date: chat.messages[chat.messages.length - 1].date,
         countUnreadMessages: chat.countUnreadMessages,
