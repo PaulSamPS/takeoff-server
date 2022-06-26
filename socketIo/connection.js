@@ -1,6 +1,7 @@
 const userHandlers = require('./handlers/user.handlers')
 const messageHandlers = require('./handlers/message.handlers')
 const followersHandlers = require('./handlers/followers.handler')
+const likesHandlers = require('./handlers/likesHandler')
 
 module.exports = function onConnection(io, socket) {
   userHandlers(io, socket)
@@ -8,4 +9,6 @@ module.exports = function onConnection(io, socket) {
   messageHandlers(io, socket)
 
   followersHandlers(io, socket)
+
+  likesHandlers(io, socket)
 }
