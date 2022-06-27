@@ -43,10 +43,16 @@ class PostController {
       let posts
 
       if (number === 1) {
-        posts = await Post.find().limit(size).sort({ createdAt: -1 }).populate('user').populate('comments.user')
+        posts = await Post.find().limit(size).sort({ createdAt: -1 }).populate('user').populate('comments.user').populate('likes.user')
       } else {
         const skips = size * (number - 1)
-        posts = await Post.find().skip(skips).limit(size).sort({ createdAt: -1 }).populate('user').populate('comments.user')
+        posts = await Post.find()
+          .skip(skips)
+          .limit(size)
+          .sort({ createdAt: -1 })
+          .populate('user')
+          .populate('comments.user')
+          .populate('likes.user')
       }
 
       if (posts.length === 0) {
@@ -70,7 +76,6 @@ class PostController {
       }
 
       postsToBeSent.length > 0 && postsToBeSent.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-
       return res.json(postsToBeSent)
     } catch (error) {
       console.error(error)
@@ -80,89 +85,88 @@ class PostController {
 
   async likePost(req, res, next) {
     try {
-      const { postId } = req.params;
-      const { userId } = req.body;
+      const { postId } = req.params
+      const { userId } = req.body
 
-      const post = await Post.findById(postId);
+      const post = await Post.findById(postId)
 
       if (!post) {
         return next(ApiError.internal('Пост не найден'))
       }
 
-      const isLiked = post.likes.filter(like => like.user.toString() === userId).length > 0;
+      const isLiked = post.likes.filter((like) => like.user.toString() === userId).length > 0
 
       if (isLiked) {
         return next(ApiError.internal('Вым уже нравится этот пост'))
       }
 
-      await post.likes.unshift({ user: userId });
-      await post.save();
+      await post.likes.unshift({ user: userId })
+      await post.save()
 
-      return res.status(200).send('Пост нравится');
+      return res.status(200).send('Пост нравится')
     } catch (error) {
-      console.error(error);
+      console.error(error)
       return next(ApiError.badRequest('Что-то пошло не так'))
     }
   }
 
   async unlikePost(req, res, next) {
     try {
-      const { postId } = req.params;
-      const { userId } = req.body;
+      const { postId } = req.params
+      const { userId } = req.body
 
-      const post = await Post.findById(postId);
+      const post = await Post.findById(postId)
       if (!post) {
         return next(ApiError.internal('Пост не найден'))
       }
 
-      const isLiked =
-          post.likes.filter(like => like.user.toString() === userId).length === 0;
+      const isLiked = post.likes.filter((like) => like.user.toString() === userId).length === 0
 
       if (isLiked) {
         return next(ApiError.internal('Пост не быыл лайкнут'))
       }
 
-      const index = post.likes.map(like => like.user.toString()).indexOf(userId);
+      const index = post.likes.map((like) => like.user.toString()).indexOf(userId)
 
-      await post.likes.splice(index, 1);
+      await post.likes.splice(index, 1)
 
-      await post.save();
+      await post.save()
 
-      return res.status(200).send('Больше не нравится');
+      return res.status(200).send('Больше не нравится')
     } catch (error) {
-      console.error(error);
+      console.error(error)
       return next(ApiError.badRequest('Что-то пошло не так'))
     }
   }
 
-  async createCommentPost(req, res, next) { try {
-    const { postId } = req.params;
+  async createCommentPost(req, res, next) {
+    try {
+      const { postId } = req.params
 
-    const { text, userId } = req.body;
+      const { text, userId } = req.body
 
-    if (text.length < 1)
-      return next(ApiError.internal('Комментарий должен содержать минимум 1 символ'))
+      if (text.length < 1) return next(ApiError.internal('Комментарий должен содержать минимум 1 символ'))
 
-    const post = await Post.findById(postId);
+      const post = await Post.findById(postId)
 
-    if (!post) return next(ApiError.internal('Пост не найден'))
+      if (!post) return next(ApiError.internal('Пост не найден'))
 
-    const newComment = {
-      _id: uuid.v4(),
-      text,
-      user: userId,
-      date: Date.now()
-    };
+      const newComment = {
+        _id: uuid.v4(),
+        text,
+        user: userId,
+        date: Date.now(),
+      }
 
-    await post.comments.unshift(newComment);
-    await post.save();
+      await post.comments.unshift(newComment)
+      await post.save()
 
-    return res.status(200).json(newComment._id);
-  } catch (error) {
-    console.error(error);
-    return next(ApiError.badRequest('Что-то пошло не так'))
-  }}
-
+      return res.status(200).json(newComment._id)
+    } catch (error) {
+      console.error(error)
+      return next(ApiError.badRequest('Что-то пошло не так'))
+    }
+  }
 }
 
 module.exports = new PostController()

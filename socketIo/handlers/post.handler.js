@@ -2,10 +2,8 @@ const { likeOrUnlikePost, commentPost } = require('../services/post.service')
 
 module.exports = function postHandler(io, socket) {
   socket.on('like:post', async ({ postId, userId, like }) => {
-    const { success } = await likeOrUnlikePost(postId, userId, like)
-    if (success) {
-      socket.emit('post:liked')
-    }
+    const { likeId } = await likeOrUnlikePost(postId, userId, like)
+    socket.emit('post:liked', { likeId })
   })
 
   socket.on('comment:post', async ({ postId, userId, text }) => {

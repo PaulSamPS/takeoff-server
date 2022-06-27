@@ -11,12 +11,18 @@ const likeOrUnlikePost = async (postId, userId, like) => {
 
     if (like) {
       const isLiked = post.likes.filter((like) => like.user.toString() === userId).length > 0
-
       if (isLiked) return { error: 'Вам уже нравится этот пост' }
 
-      await post.likes.unshift({ user: userId })
+      const newLike = {
+        _id: uuid.v4(),
+        user: userId,
+      }
+
+      await post.likes.unshift(newLike)
 
       await post.save()
+
+      return { likeId: newLike._id }
     } else {
       const isLiked = post.likes.filter((like) => like.user.toString() === userId).length === 0
 
@@ -29,15 +35,8 @@ const likeOrUnlikePost = async (postId, userId, like) => {
       await post.save()
     }
 
-    const user = await User.findById(userId)
-
-    const { name, avatar } = user
-
     return {
       success: true,
-      name,
-      avatar,
-      postByUserId: post.user.toString(),
     }
   } catch (error) {
     return { error: 'Ошибка!!!' }

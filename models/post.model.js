@@ -10,7 +10,12 @@ const PostSchema = new Schema(
 
     image: { type: String, default: null },
 
-    likes: [{ user: { type: Schema.Types.ObjectId, ref: 'User' } }],
+    likes: [
+      {
+        _id: { type: String, required: true },
+        user: { type: Schema.Types.ObjectId, ref: 'User' },
+      },
+    ],
 
     comments: [
       {
