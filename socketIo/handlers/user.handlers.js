@@ -11,24 +11,19 @@ module.exports = function userHandlers(io, socket) {
     }, 3000)
   })
 
-  socket.on('user:online', (users) => {
-    userOnline(users)
-  })
-
   socket.on('userInfo:get', async ({ userId }) => {
     const { user } = await getUser(userId)
     socket.emit('userInfo:user', { user })
   })
 
-  socket.on('logout', ({ userId }) => {
-    const { users } = userOnline(userId, socket.id)
-
+  socket.on('logout', async () => {
+    const { users } = await removeUser(socket.id)
     socket.emit('user_list:update', {
-      users: users.filter((user) => user.userId !== userId),
+      users,
     })
   })
 
-  socket.on('disconnect', () => {
-    removeUser(socket.id)
+  socket.on('disconnect', async () => {
+    await removeUser(socket.id)
   })
 }
