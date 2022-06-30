@@ -52,10 +52,13 @@ class UserService {
     if (!comparePassword) {
       return next(ApiError.internal('Неверный пароль'))
     }
+    user.isOnline = true
+    await user.save()
     const userDto = new UserDto(user)
 
     const tokens = tokenService.generateTokens({ ...userDto })
     await tokenService.saveToken(userDto.id, tokens.refreshToken)
+
     return { ...tokens, user: userDto }
   }
 

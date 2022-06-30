@@ -6,18 +6,21 @@ const addUser = async (userId, socketId) => {
   const userBD = await User.findById(userId)
 
   if (user && user.socketId === socketId) {
-    return { users }
+    return users
   } else {
     if (user && user.socketId !== socketId) {
-      await removeUser(user.socketId)
+      const indexOf = users.map((user) => user.socketId).indexOf(socketId)
+
+      users.splice(indexOf, 1)
       userBD.isOnline = false
       await userBD.save()
     }
+
     const newUser = { userId, socketId }
     userBD.isOnline = true
     await userBD.save()
     users.push(newUser)
-    return { users }
+    return users
   }
 }
 

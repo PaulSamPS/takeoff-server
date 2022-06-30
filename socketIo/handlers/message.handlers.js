@@ -12,6 +12,7 @@ module.exports = function messageHandlers(io, socket) {
   socket.on('message:add', async ({ userId, msgSendToUserId, message }) => {
     const { newMessage, error } = await sendMsg(userId, msgSendToUserId, message)
     const receiverSocket = await findConnectedUser(msgSendToUserId)
+    console.log(receiverSocket)
 
     if (receiverSocket) {
       io.to(receiverSocket.socketId).emit('message:received', { newMessage })
@@ -27,6 +28,7 @@ module.exports = function messageHandlers(io, socket) {
 
   socket.on('message:read', async ({ userId, msgSendToUserId }) => {
     await setMsgRead(msgSendToUserId, userId)
+    socket.emit('message:reads')
   })
 
   socket.on('chat:get', async ({ userId }) => {

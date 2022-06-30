@@ -11,24 +11,19 @@ const {
 module.exports = function followersHandlers(io, socket) {
   socket.on('followings:get', async ({ userId }) => {
     const { followingsUser, followersUser } = await followersGet(userId)
-    socket.emit('followings:sent', { followingsUser, followersUser })
-  })
-
-  socket.on('followings:my-get', async ({ userId }) => {
-    const { followingsUser, followersUser } = await followersGet(userId)
-    socket.emit('followings:my-sent', { followingsUser, followersUser })
+    io.emit('followings:sent', { followingsUser, followersUser })
   })
 
   socket.on('follow', async ({ userId, userToFollowId }) => {
     await follow(userId, userToFollowId)
     const { followingsUser, followersUser } = await followersGet(userId)
-    socket.emit('followings:done', { followingsUser, followersUser })
+    io.emit('followings:done', { followingsUser, followersUser })
   })
 
   socket.on('unfollow', async ({ userId, userToUnfollowId }) => {
     await unfollow(userId, userToUnfollowId)
     const { followingsUser, followersUser } = await followersGet(userId)
-    socket.emit('followings:done', { followingsUser, followersUser })
+    io.emit('followings:done', { followingsUser, followersUser })
   })
 
   socket.on('friendsRequest:get', async ({ userId }) => {
@@ -40,14 +35,14 @@ module.exports = function followersHandlers(io, socket) {
     const { userFriends } = await addToFriends(userId, userToFriendId)
     await unfollow(userId, userToFriendId)
     const { followingsUser, followersUser } = await followersGet(userId)
-    socket.emit('followings:done', { followingsUser, followersUser })
-    socket.emit('friends:sent', { userFriends })
+    io.emit('followings:done', { followingsUser, followersUser })
+    io.emit('friends:sent', { userFriends })
   })
 
   socket.on('friends:reject', async ({ userId, userToRejectId }) => {
     await unfollow(userId, userToRejectId)
     const { followingsUser, followersUser } = await followersGet(userId)
-    socket.emit('followings:done', { followingsUser, followersUser })
+    io.emit('followings:done', { followingsUser, followersUser })
   })
 
   socket.on('friends:get', async ({ userId }) => {
