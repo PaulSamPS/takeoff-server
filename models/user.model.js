@@ -11,6 +11,7 @@ const UserSchema = new Schema(
     avatar: { type: String, default: null },
     notification: { type: Boolean, default: false },
     lastVisit: { type: Date, default: null },
+    isOnline: { type: Boolean, default: false },
   },
   { timestamps: true }
 )
