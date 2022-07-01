@@ -4,10 +4,9 @@ module.exports = function userHandlers(io, socket) {
   socket.on('user:add', async ({ userId }) => {
     const users = await addUser(userId, socket.id)
 
-    console.log(users)
     setInterval(() => {
       socket.emit('user_list:update', {
-        users: users.filter((user) => user.userId),
+        users,
       })
     }, 3000)
   })
@@ -19,9 +18,13 @@ module.exports = function userHandlers(io, socket) {
 
   socket.on('logout', async () => {
     const { users } = await removeUser(socket.id)
-    socket.emit('user_list:update', {
-      users,
-    })
+    setTimeout(
+      () =>
+        socket.emit('user_list:update', {
+          users,
+        }),
+      1000
+    )
   })
 
   socket.on('disconnect', async () => {

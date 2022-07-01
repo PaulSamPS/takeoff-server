@@ -60,10 +60,22 @@ const sendMsg = async (userId, msgSendToUserId, message) => {
   }
 }
 
-const setMsgToUnread = async (userId, msgSendToUserId) => {
+const setMsgToUnread = async (sender, receiver) => {
   try {
-    const user = await Chat.findOne({ user: userId }).populate('chats.messagesWith')
-    const chatTo = user.chats.find((chat) => chat.messagesWith._id.toString() === msgSendToUserId)
+    const user = await Chat.findOne({ user: receiver }).populate('chats.messagesWith')
+    const chatTo = user.chats.find((chat) => chat.messagesWith._id.toString() === sender)
+
+    chatTo.countUnreadMessages += 1
+    await user.save()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const setMsgToUnreadNew = async (receiver, sender) => {
+  try {
+    const user = await Chat.findOne({ user: receiver }).populate('chats.messagesWith')
+    const chatTo = user.chats.find((chat) => chat.messagesWith._id.toString() === sender)
 
     chatTo.countUnreadMessages += 1
     await user.save()
@@ -109,4 +121,4 @@ const deleteMessage = async (userId, messagesWith, messageId) => {
   }
 }
 
-module.exports = { loadMessages, sendMsg, setMsgToUnread, deleteMessage, setMsgRead }
+module.exports = { loadMessages, sendMsg, setMsgToUnread, setMsgToUnreadNew, deleteMessage, setMsgRead }
