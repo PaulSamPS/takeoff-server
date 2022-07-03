@@ -1,5 +1,5 @@
 const User = require('../../models/user.model')
-const users = []
+let users = []
 
 const addUser = async (userId, socketId) => {
   const user = users.find((user) => user.userId === userId)
@@ -9,17 +9,17 @@ const addUser = async (userId, socketId) => {
     return users
   } else {
     if (user && user.socketId !== socketId) {
-      const indexOf = users.map((user) => user.socketId).indexOf(socketId)
-
-      users.splice(indexOf, 1)
+      await removeUser(user.socketId)
       userBD.isOnline = false
       await userBD.save()
     }
 
-    const newUser = { userId, socketId }
     userBD.isOnline = true
     await userBD.save()
+    const newUser = { userId, socketId }
+
     users.push(newUser)
+
     return users
   }
 }

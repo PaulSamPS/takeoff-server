@@ -6,8 +6,9 @@ module.exports = function userHandlers(io, socket) {
 
     setInterval(() => {
       socket.emit('user_list:update', {
-        users,
+        users: users.filter((user) => user.userId !== userId),
       })
+      console.log('users', users)
     }, 3000)
   })
 

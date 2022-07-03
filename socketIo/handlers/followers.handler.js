@@ -16,8 +16,6 @@ module.exports = function followersHandlers(io, socket) {
 
   socket.on('follow', async ({ userId, userToFollowId }) => {
     await follow(userId, userToFollowId)
-    const { followingsUser, followersUser } = await followersGet(userId)
-    io.emit('followings:done', { followingsUser, followersUser })
   })
 
   socket.on('unfollow', async ({ userId, userToUnfollowId }) => {

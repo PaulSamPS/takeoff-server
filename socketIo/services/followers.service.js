@@ -4,9 +4,11 @@ const ApiError = require('../../error/api.error')
 
 const friendsRequestGet = async (userId) => {
   const folUser = await Followers.findOne({ user: userId }).populate('following.user')
-  let followingsUser = folUser.following.map((e) => {
-    return new FollowersUserDto(e.user)
-  })
+  let followingsUser =
+    folUser &&
+    folUser.following.map((e) => {
+      return new FollowersUserDto(e.user)
+    })
 
   return { followingsUser }
 }

@@ -1,4 +1,4 @@
-const { loadMessages, sendMsg, setMsgToUnread, deleteMessage, setMsgRead, setMsgToUnreadNew } = require('../services/message.service')
+const { loadMessages, sendMsg, setMsgToUnread, deleteMessage, setMsgRead } = require('../services/message.service')
 const { findConnectedUser } = require('../services/room.service')
 const chatService = require('../../services/chat.service')
 const Chat = require('../../models/chat.model')
@@ -22,7 +22,7 @@ module.exports = function messageHandlers(io, socket) {
   })
 
   socket.on('message:toUnread', async ({ receiver, sender }) => {
-    await setMsgToUnreadNew(receiver, sender)
+    await setMsgToUnread(sender, receiver)
   })
 
   socket.on('message:read', async ({ userId, msgSendToUserId }) => {
