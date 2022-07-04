@@ -13,12 +13,10 @@ const addUser = async (userId, socketId) => {
       userBD.isOnline = false
       await userBD.save()
     }
-
+    const newUser = { userId, socketId }
+    users.push(newUser)
     userBD.isOnline = true
     await userBD.save()
-    const newUser = { userId, socketId }
-
-    users.push(newUser)
 
     return users
   }
@@ -34,8 +32,6 @@ const removeUser = async (socketId) => {
     lastVisit.save()
   }
   users.splice(indexOf, 1)
-
-  return { users }
 }
 
 const getUser = async (userId) => {

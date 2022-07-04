@@ -2,14 +2,11 @@ const { addUser, removeUser, getUser, userOnline } = require('../services/room.s
 
 module.exports = function userHandlers(io, socket) {
   socket.on('user:add', async ({ userId }) => {
-    const users = await addUser(userId, socket.id)
+    const usersOnline = await addUser(userId, socket.id)
 
-    setInterval(() => {
-      socket.emit('user_list:update', {
-        users: users.filter((user) => user.userId !== userId),
-      })
-      console.log('users', users)
-    }, 3000)
+    socket.emit('user_list:update', {
+      usersOnline: usersOnline.filter((u) => u.userId !== userId),
+    })
   })
 
   socket.on('userInfo:get', async ({ userId }) => {
@@ -18,14 +15,7 @@ module.exports = function userHandlers(io, socket) {
   })
 
   socket.on('logout', async () => {
-    const { users } = await removeUser(socket.id)
-    setTimeout(
-      () =>
-        socket.emit('user_list:update', {
-          users,
-        }),
-      1000
-    )
+    await removeUser(socket.id)
   })
 
   socket.on('disconnect', async () => {
