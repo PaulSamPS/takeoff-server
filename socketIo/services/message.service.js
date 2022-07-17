@@ -8,6 +8,7 @@ const loadMessages = async (userId, messagesWith) => {
     if (!chat) {
       return { error: 'Чат не найден' }
     }
+
     return { chat }
   } catch (error) {
     console.log(error)

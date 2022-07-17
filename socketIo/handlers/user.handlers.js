@@ -5,7 +5,7 @@ module.exports = function userHandlers(io, socket) {
     const usersOnline = await addUser(userId, socket.id)
 
     socket.emit('user_list:update', {
-      usersOnline: usersOnline.filter((u) => u.userId !== userId),
+      usersOnline,
     })
   })
 

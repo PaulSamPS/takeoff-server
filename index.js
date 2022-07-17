@@ -15,7 +15,7 @@ const PORT = process.env.PORT || 4000
 
 const app = express()
 const httpServer = createServer(app)
-const io = new Server(httpServer, { cors: { origin: process.env.CLIENT_URL, methods: ['GET', 'POST'] } })
+const io = new Server(httpServer, { cors: { origin: process.env.CLIENT_URL, methods: ['GET', 'POST'] }, serveClient: false })
 app.use(cookieParser(process.env.SECRET_COOKIE))
 app.use(
   cors({

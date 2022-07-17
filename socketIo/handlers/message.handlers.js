@@ -4,8 +4,8 @@ const chatService = require('../../services/chat.service')
 const Chat = require('../../models/chat.model')
 
 module.exports = function messageHandlers(io, socket) {
-  socket.on('messages:get', async ({ userId, messagesWith }) => {
-    const { chat, error } = await loadMessages(userId, messagesWith)
+  socket.on('messages:get', async ({ userId, messagesWith, pageNumber }) => {
+    const { chat, error } = await loadMessages(userId, messagesWith, pageNumber)
     !error ? socket.emit('message_list:update', { chat }) : socket.emit('chat:notFound')
   })
 
