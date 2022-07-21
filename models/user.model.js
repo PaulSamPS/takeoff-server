@@ -15,7 +15,7 @@ const UserSchema = new Schema(
       city: { type: String, required: true },
       language: { type: String, required: true },
       gender: { type: String, required: true },
-      familyStatus: { type: String, required: true },
+      familyStatus: { type: String },
     },
   },
   { timestamps: true }

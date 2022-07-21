@@ -1,4 +1,5 @@
 const authService = require('../services/auth.service')
+const City = require('../models/cities.model')
 
 class AuthController {
   async registration(req, res, next) {
@@ -77,6 +78,11 @@ class AuthController {
     } catch (e) {
       next(e)
     }
+  }
+
+  async getCity(req, res) {
+    const cities = await City.find()
+    return res.json(cities)
   }
 }
 

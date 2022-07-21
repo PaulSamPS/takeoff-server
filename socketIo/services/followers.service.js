@@ -1,5 +1,5 @@
 const Followers = require('../../models/followers.model')
-const FollowersUserDto = require('../../dto/followerrsUser.dto')
+const UserDto = require('../../dto/user.dto')
 const ApiError = require('../../error/api.error')
 
 const friendsRequestGet = async (userId) => {
@@ -7,7 +7,7 @@ const friendsRequestGet = async (userId) => {
   let followingsUser =
     folUser &&
     folUser.following.map((e) => {
-      return new FollowersUserDto(e.user)
+      return new UserDto(e.user)
     })
 
   return { followingsUser }
@@ -19,7 +19,7 @@ const friendsGet = async (userId) => {
   let friendsUser =
     user &&
     user.friends.map((e) => {
-      return new FollowersUserDto(e.user)
+      return new UserDto(e.user)
     })
 
   return { friendsUser }
@@ -31,7 +31,7 @@ const friendsUSerInfoGet = async (userId) => {
   let friendsUser =
     user &&
     user.friends.map((e) => {
-      return new FollowersUserDto(e.user)
+      return new UserDto(e.user)
     })
 
   return { friendsUser }
@@ -44,13 +44,13 @@ const followersGet = async (userId) => {
   let followingsUser =
     user &&
     user.following.map((e) => {
-      return new FollowersUserDto(e.user)
+      return new UserDto(e.user)
     })
 
   let followersUser =
     folUser &&
     folUser.followers.map((e) => {
-      return new FollowersUserDto(e.user)
+      return new UserDto(e.user)
     })
 
   return { followingsUser, followersUser }

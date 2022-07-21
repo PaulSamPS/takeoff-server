@@ -16,12 +16,13 @@ class TokenService {
   }
 
   async saveToken(user, refreshToken) {
-    const tokenData = await Token.findById(user)
+    const tokenData = await Token.findOne({ user: user })
     if (tokenData) {
       tokenData.refreshToken = refreshToken
       return tokenData
+    } else {
+      return await Token.create({ user: user, refreshToken })
     }
-    return await Token.create({ user: user, refreshToken })
   }
 
   validateAccessToken(token) {
