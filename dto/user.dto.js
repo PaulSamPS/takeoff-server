@@ -1,26 +1,22 @@
 module.exports = class UserDto {
   id
-  name
+  firstName
+  lastName
   email
-  position
-  level
   role
   avatar
-  unreadMessage
-  countUnreadMessages
   lastVisit
-  isOnline
+  notification
+  bio
   constructor(model) {
     this.id = model.id
-    this.name = model.name
+    this.firstName = model.firstName
+    this.lastName = model.lastName
     this.email = model.email
-    this.position = model.position
-    this.level = model.level
     this.role = model.role
     this.avatar = model.avatar
-    this.unreadMessage = model.unreadMessage
-    this.countUnreadMessages = model.countUnreadMessages
     this.lastVisit = model.lastVisit
-    this.isOnline = model.isOnline
+    this.notification = model.notification
+    this.bio = model.bio
   }
 }

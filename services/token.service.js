@@ -15,13 +15,13 @@ class TokenService {
     }
   }
 
-  async saveToken(id, refreshToken) {
-    const tokenData = await Token.findById(id)
+  async saveToken(user, refreshToken) {
+    const tokenData = await Token.findById(user)
     if (tokenData) {
       tokenData.refreshToken = refreshToken
       return tokenData
     }
-    return await Token.create({ id, refreshToken })
+    return await Token.create({ user: user, refreshToken })
   }
 
   validateAccessToken(token) {

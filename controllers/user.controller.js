@@ -1,5 +1,4 @@
 const User = require('../models/user.model')
-const Chat = require('../models/chat.model')
 const Token = require('../models/token.model')
 const userService = require('../services/user.service')
 const ApiError = require('../error/api.error')
@@ -8,76 +7,10 @@ const path = require('path')
 const fs = require('fs')
 
 class UserController {
-  async registration(req, res, next) {
-    try {
-      const { name, email, position, level, password } = req.body
-
-      const userData = await userService.registration(name, email, position, level, password, next)
-
-      await res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: 1000 * 60 * 60 * 24 * 30,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-      })
-      return res.json({
-        accessToken: userData.accessToken,
-        user: userData.user,
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  async login(req, res, next) {
-    try {
-      const { name, password } = req.body
-      const userData = await userService.login(name, password, next)
-      res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: 1000 * 60 * 60 * 24 * 30,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-      })
-      return res.json({
-        accessToken: userData.accessToken,
-        user: userData.user,
-      })
-    } catch (e) {
-      console.log(e)
-    }
-  }
-
-  async logout(req, res) {
-    const { refreshToken } = req.cookies
-    await userService.logout(refreshToken)
-    res.clearCookie('refreshToken')
-    return res.json({ message: 'Выход выполнен' })
-  }
-
-  async refresh(req, res, next) {
-    try {
-      const { refreshToken } = req.cookies
-      const userData = await userService.refresh(refreshToken, next)
-      res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: 1000 * 60 * 60 * 24 * 30,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-      })
-      return res.json({
-        refreshToken: userData.refreshToken,
-        accessToken: userData.accessToken,
-        user: userData.user,
-      })
-    } catch (e) {
-      next(e)
-    }
-  }
-
   async getAll(req, res) {
     const user = await User.find()
-    return res.json(user)
+    const userDto = user.map((u) => new UserDto(u))
+    return res.json(userDto)
   }
 
   async getOne(req, res, next) {

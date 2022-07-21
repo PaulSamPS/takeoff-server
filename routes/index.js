@@ -1,6 +1,7 @@
 const Router = require('express')
 const router = new Router()
 
+const authRouter = require('./auth.router')
 const userRouter = require('./user.router')
 const positionRouter = require('./position.router')
 const levelRouter = require('./level.router')
@@ -8,6 +9,7 @@ const chatRouter = require('./chat.router')
 const followRouter = require('./followers.router')
 const postRouter = require('./post.router')
 
+router.use('/auth', authRouter)
 router.use('/user', userRouter)
 router.use('/position', positionRouter)
 router.use('/level', levelRouter)
