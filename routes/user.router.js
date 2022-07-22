@@ -6,7 +6,7 @@ const auth = require('../middleware/auth.middleware')
 router.post('/:id/upload/avatar/', userController.avatar)
 router.post('/:id/remove/avatar/:avatar', userController.removeAvatar)
 router.post('/:id/remove/:avatar', userController.removeUser)
-router.post('/:id/update', userController.updateUser)
+router.post('/update/:id', userController.updateUser)
 router.get('/', userController.getAll)
 router.get('/:id', userController.getOne)
 

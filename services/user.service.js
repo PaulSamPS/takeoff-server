@@ -15,19 +15,21 @@ class UserService {
     return { user: userDto }
   }
 
-  async updateUser(id, name, email, position, level, next) {
+  async updateUser(id, firstName, lastName, email, birthday, city, language, familyStatus, next) {
     const user = await User.findById(id)
+
     if (!user) {
       return next(ApiError.badRequest('Пользователь не найден'))
     }
-    if (name) {
-      const updateUser = await User.findOne({ name: name })
-      if (updateUser) {
-        return next(ApiError.badRequest('Логин занят'))
-      } else {
-        user.name = name
-      }
+
+    if (firstName) {
+      user.firstName = firstName
     }
+
+    if (lastName) {
+      user.lastName = lastName
+    }
+
     if (email) {
       const updateEmail = await User.findOne({ email: email })
       if (updateEmail) {
@@ -36,14 +38,27 @@ class UserService {
         user.email = email
       }
     }
-    if (position) {
-      user.position = position
+
+    if (birthday) {
+      user.bio.birthday = birthday
     }
-    if (level) {
-      user.level = level
+
+    if (city) {
+      user.bio.city = city
     }
+
+    if (language) {
+      user.bio.language = language
+    }
+
+    if (familyStatus) {
+      user.bio.familyStatus = familyStatus
+    }
+
     await user.save()
+
     const userDto = new UserDto(user)
+
     return { user: userDto }
   }
 }
