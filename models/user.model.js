@@ -11,7 +11,11 @@ const UserSchema = new Schema(
     notification: { type: Boolean, default: false },
     lastVisit: { type: Date, default: null },
     bio: {
-      birthday: { type: String, require: true },
+      birthday: {
+        day: { type: Number },
+        month: { type: String },
+        year: { type: Number },
+      },
       city: { type: String, required: true },
       language: { type: String, required: true },
       gender: { type: String, required: true },
