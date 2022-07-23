@@ -15,7 +15,7 @@ class UserService {
     return { user: userDto }
   }
 
-  async updateUser(id, firstName, lastName, email, day, month, year, city, language, familyStatus, next) {
+  async updateUser(id, firstName, lastName, email, gender, day, month, year, city, language, familyStatus, next) {
     const user = await User.findById(id)
 
     if (!user) {
@@ -37,6 +37,10 @@ class UserService {
       } else {
         user.email = email
       }
+    }
+
+    if (gender) {
+      user.bio.gender = gender
     }
 
     if (day) {
