@@ -15,7 +15,7 @@ class UserService {
     return { user: userDto }
   }
 
-  async updateUser(id, firstName, lastName, email, day, city, language, familyStatus, next) {
+  async updateUser(id, firstName, lastName, email, day, month, year, city, language, familyStatus, next) {
     const user = await User.findById(id)
 
     if (!user) {
@@ -41,6 +41,14 @@ class UserService {
 
     if (day) {
       user.bio.birthday.day = day
+    }
+
+    if (month) {
+      user.bio.birthday.month = month
+    }
+
+    if (year) {
+      user.bio.birthday.year = year
     }
 
     if (city) {

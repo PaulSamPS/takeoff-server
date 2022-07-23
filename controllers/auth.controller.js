@@ -20,7 +20,6 @@ class AuthController {
         password,
         next
       )
-      console.log(userData.user)
       await res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
