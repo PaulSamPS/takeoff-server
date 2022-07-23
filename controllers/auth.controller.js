@@ -4,7 +4,7 @@ const City = require('../models/cities.model')
 class AuthController {
   async registration(req, res, next) {
     try {
-      const { firstName, lastName, email, city, gender, birthday, familyStatus, language, password } = req.body
+      const { firstName, lastName, email, city, gender, day, month, year, familyStatus, language, password } = req.body
 
       const userData = await authService.registration(
         firstName,
@@ -12,7 +12,9 @@ class AuthController {
         email,
         city,
         gender,
-        birthday,
+        day,
+        month,
+        year,
         familyStatus,
         language,
         password,
