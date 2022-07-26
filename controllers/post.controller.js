@@ -1,5 +1,6 @@
 const Post = require('../models/post.model')
 const Followers = require('../models/followers.model')
+const User = require('../models/user.model')
 const ApiError = require('../error/api.error')
 const uuid = require('uuid')
 const path = require('path')
@@ -85,7 +86,7 @@ class PostController {
 
   async likePost(req, res, next) {
     try {
-      const { postId } = req.params
+      const { postId, userToNotifyId } = req.params
       const { userId } = req.body
 
       const post = await Post.findById(postId)

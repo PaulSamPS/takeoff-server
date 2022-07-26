@@ -1,11 +1,11 @@
 const Post = require('../../models/post.model')
 const User = require('../../models/user.model')
-const ApiError = require('../../error/api.error')
 const uuid = require('uuid')
 
-const likeOrUnlikePost = async (postId, userId, like) => {
+const likeOrUnlikePost = async (postId, userId, userToNotifyId, like) => {
   try {
     const post = await Post.findById(postId)
+    const userToNotify = await User.findById(userToNotifyId)
 
     if (!post) return { error: 'Пост не найден' }
 
@@ -18,9 +18,18 @@ const likeOrUnlikePost = async (postId, userId, like) => {
         user: userId,
       }
 
-      await post.likes.unshift(newLike)
+      const newNotification = {
+        type: 'newLike',
+        user: userId,
+        post: postId,
+        date: Date.now(),
+      }
 
+      await post.likes.unshift(newLike)
       await post.save()
+
+      await userToNotify.notifications.unshift(newNotification)
+      await userToNotify.save()
 
       return { likeId: newLike._id }
     } else {
