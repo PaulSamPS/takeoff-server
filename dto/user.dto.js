@@ -6,7 +6,6 @@ module.exports = class UserDto {
   role
   avatar
   lastVisit
-  notifications
   bio
   constructor(model) {
     this.id = model.id
@@ -16,7 +15,6 @@ module.exports = class UserDto {
     this.role = model.role
     this.avatar = model.avatar
     this.lastVisit = model.lastVisit
-    this.notifications = model.notifications
     this.bio = model.bio
   }
 }

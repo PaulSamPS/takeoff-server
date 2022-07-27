@@ -7,6 +7,7 @@ router.post('/:id/upload/avatar/', userController.avatar)
 router.post('/:id/remove/avatar/:avatar', userController.removeAvatar)
 router.post('/:id/remove/:avatar', userController.removeUser)
 router.post('/update/:id', userController.updateUser)
+router.get('/notifications/:id', userController.notification)
 router.get('/', userController.getAll)
 router.get('/:id', userController.getOne)
 

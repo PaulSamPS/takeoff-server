@@ -1,5 +1,6 @@
 const User = require('../models/user.model')
 const Token = require('../models/token.model')
+const Notification = require('../models/notification.model')
 const userService = require('../services/user.service')
 const ApiError = require('../error/api.error')
 const UserDto = require('../dto/user.dto')
@@ -71,6 +72,13 @@ class UserController {
     const { firstName, lastName, email, gender, day, month, year, city, language, familyStatus } = req.body
     const user = await userService.updateUser(id, firstName, lastName, email, gender, day, month, year, city, language, familyStatus, next)
     return res.json(user)
+  }
+
+  async notification(req, res) {
+    const { id } = req.params
+    const notifications = await Notification.findOne({ user: id })
+
+    return res.json(notifications)
   }
 }
 

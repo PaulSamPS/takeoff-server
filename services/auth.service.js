@@ -1,5 +1,6 @@
 const ApiError = require('../error/api.error')
 const User = require('../models/user.model')
+const Notification = require('../models/notification.model')
 const bcrypt = require('bcrypt')
 const UserDto = require('../dto/user.dto')
 const Chat = require('../models/chat.model')
@@ -34,8 +35,11 @@ class AuthService {
       },
     })
     const userDto = new UserDto(user)
+
     await new Chat({ user: userDto.id, chats: [] }).save()
     await new Followers({ user: userDto.id, followers: [], following: [], friends: [] }).save()
+    await new Notification({ user: userDto.id, notifications: [] }).save()
+
     const tokens = tokenService.generateTokens({ ...userDto })
     await tokenService.saveToken(userDto.id, tokens.refreshToken)
     return { ...tokens, user: userDto }
