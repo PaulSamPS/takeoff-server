@@ -65,10 +65,31 @@ const commentPost = async (postId, userId, text) => {
     date: Date.now(),
   }
 
+  if (post.user.toString() !== userId) {
+    await newCommentNotification(postId, newComment._id, userId, post.user.toString(), text)
+  }
+
   await post.comments.unshift(newComment)
   await post.save()
 
   return { commentId: newComment._id }
+}
+
+const newCommentNotification = async (postId, commentId, userId, userToNotifyId, text) => {
+  const userToNotify = await Notification.findOne({ user: userToNotifyId })
+
+  const newNotification = {
+    _id: uuid.v4(),
+    type: 'newComment',
+    user: userId,
+    post: postId,
+    commentId,
+    text,
+    date: Date.now(),
+  }
+
+  await userToNotify.notifications.unshift(newNotification)
+  await userToNotify.save()
 }
 
 module.exports = { likeOrUnlikePost, commentPost }
