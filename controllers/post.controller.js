@@ -1,6 +1,6 @@
 const Post = require('../models/post.model')
 const Followers = require('../models/followers.model')
-const User = require('../models/user.model')
+const Notification = require('../models/notification.model')
 const ApiError = require('../error/api.error')
 const uuid = require('uuid')
 const path = require('path')
@@ -84,89 +84,19 @@ class PostController {
     }
   }
 
-  async likePost(req, res, next) {
-    try {
-      const { postId, userToNotifyId } = req.params
-      const { userId } = req.body
+  async deletePost(req, res, next) {
+    const { postId } = req.params
+    const { userId } = req.body
 
-      const post = await Post.findById(postId)
+    const post = await Post.findByIdAndDelete(postId)
+    const userNotifications = await Notification.findOne({ user: userId })
+    await Notification.updateMany({ _id: `${userNotifications._id}` }, { $pull: { notifications: { post: postId } } })
 
-      if (!post) {
-        return next(ApiError.internal('Пост не найден'))
-      }
-
-      const isLiked = post.likes.filter((like) => like.user.toString() === userId).length > 0
-
-      if (isLiked) {
-        return next(ApiError.internal('Вым уже нравится этот пост'))
-      }
-
-      await post.likes.unshift({ user: userId })
-      await post.save()
-
-      return res.status(200).send('Пост нравится')
-    } catch (error) {
-      console.error(error)
-      return next(ApiError.badRequest('Что-то пошло не так'))
+    if (!post) {
+      return next(ApiError.badRequest('Пост не найден'))
     }
-  }
 
-  async unlikePost(req, res, next) {
-    try {
-      const { postId } = req.params
-      const { userId } = req.body
-
-      const post = await Post.findById(postId)
-      if (!post) {
-        return next(ApiError.internal('Пост не найден'))
-      }
-
-      const isLiked = post.likes.filter((like) => like.user.toString() === userId).length === 0
-
-      if (isLiked) {
-        return next(ApiError.internal('Пост не быыл лайкнут'))
-      }
-
-      const index = post.likes.map((like) => like.user.toString()).indexOf(userId)
-
-      await post.likes.splice(index, 1)
-
-      await post.save()
-
-      return res.status(200).send('Больше не нравится')
-    } catch (error) {
-      console.error(error)
-      return next(ApiError.badRequest('Что-то пошло не так'))
-    }
-  }
-
-  async createCommentPost(req, res, next) {
-    try {
-      const { postId } = req.params
-
-      const { text, userId } = req.body
-
-      if (text.length < 1) return next(ApiError.internal('Комментарий должен содержать минимум 1 символ'))
-
-      const post = await Post.findById(postId)
-
-      if (!post) return next(ApiError.internal('Пост не найден'))
-
-      const newComment = {
-        _id: uuid.v4(),
-        text,
-        user: userId,
-        date: Date.now(),
-      }
-
-      await post.comments.unshift(newComment)
-      await post.save()
-
-      return res.status(200).json(newComment._id)
-    } catch (error) {
-      console.error(error)
-      return next(ApiError.badRequest('Что-то пошло не так'))
-    }
+    return res.json('Пост удалён')
   }
 }
 
