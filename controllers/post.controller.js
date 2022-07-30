@@ -90,7 +90,7 @@ class PostController {
 
     const post = await Post.findByIdAndDelete(postId)
     const userNotifications = await Notification.findOne({ user: userId })
-    await Notification.updateMany({ _id: `${userNotifications._id}` }, { $pull: { notifications: { post: postId } } })
+    await Notification.updateOne({ _id: `${userNotifications._id}` }, { $pull: { notifications: { post: postId } } })
 
     if (!post) {
       return next(ApiError.badRequest('Пост не найден'))

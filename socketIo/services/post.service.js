@@ -1,6 +1,28 @@
 const Post = require('../../models/post.model')
 const Notification = require('../../models/notification.model')
 const uuid = require('uuid')
+const path = require('path')
+const Followers = require('../../models/followers.model')
+const ApiError = require('../../error/api.error')
+
+const createPost = async (id, text, location, image) => {
+  const newPost = {
+    user: id,
+    text,
+  }
+  if (location) newPost.location = location
+  if (image !== undefined) {
+    let fileName = uuid.v4() + '.jpg'
+    await image.mv(path.resolve(__dirname, '..', 'static/post', fileName))
+    newPost.image = fileName
+  }
+
+  const post = await new Post(newPost).save()
+
+  const postCreated = await Post.findById(post._id).populate('user')
+
+  return postCreated
+}
 
 const likeOrUnlikePost = async (postId, userId, userToNotifyId, like) => {
   try {
@@ -92,4 +114,47 @@ const newCommentNotification = async (postId, commentId, userId, userToNotifyId,
   await userToNotify.save()
 }
 
-module.exports = { likeOrUnlikePost, commentPost }
+const getAllPost = async (userId, pageNumber) => {
+  const number = Number(pageNumber)
+  const size = 8
+
+  let posts
+
+  if (number === 1) {
+    posts = await Post.find().limit(size).sort({ createdAt: -1 }).populate('user').populate('comments.user').populate('likes.user')
+  } else {
+    const skips = size * (number - 1)
+    posts = await Post.find()
+      .skip(skips)
+      .limit(size)
+      .sort({ createdAt: -1 })
+      .populate('user')
+      .populate('comments.user')
+      .populate('likes.user')
+  }
+
+  if (posts.length === 0) {
+    return res.json([])
+  }
+
+  let postsToBeSent = []
+
+  const loggedUser = await Followers.findOne({ user: userId })
+
+  if (loggedUser.friends.length === 0) {
+    postsToBeSent = posts.filter((post) => post.user._id.toString() === userId)
+  } else {
+    for (let i = 0; i < loggedUser.friends.length; i++) {
+      const foundPostsFromFriends = posts.filter((post) => post.user._id.toString() === loggedUser.friends[i].user.toString())
+
+      if (foundPostsFromFriends.length > 0) postsToBeSent.push(...foundPostsFromFriends)
+    }
+    const foundOwnPosts = posts.filter((post) => post.user._id.toString() === userId)
+    if (foundOwnPosts.length > 0) postsToBeSent.push(...foundOwnPosts)
+  }
+
+  postsToBeSent.length > 0 && postsToBeSent.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  return postsToBeSent
+}
+
+module.exports = { likeOrUnlikePost, commentPost, createPost, getAllPost }
