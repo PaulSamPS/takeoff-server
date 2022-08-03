@@ -133,10 +133,6 @@ const getAllPost = async (userId, pageNumber) => {
       .populate('likes.user')
   }
 
-  if (posts.length === 0) {
-    return res.json([])
-  }
-
   let postsToBeSent = []
 
   const loggedUser = await Followers.findOne({ user: userId })
