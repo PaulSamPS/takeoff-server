@@ -1,5 +1,6 @@
 const authService = require('../services/auth.service')
 const City = require('../models/cities.model')
+const User = require('../models/user.model')
 
 class AuthController {
   async registration(req, res, next) {
@@ -79,6 +80,21 @@ class AuthController {
     } catch (e) {
       next(e)
     }
+  }
+
+  async settings(req, res) {
+    const { userId, notification } = req.body
+    console.log(userId)
+    const user = await User.findById(userId)
+
+    if (!user) {
+      return 'Пользователь не найден'
+    }
+
+    user.settings.notification.messagesToast = notification
+    await user.save()
+
+    return res.json('Обновлено')
   }
 
   async getCity(req, res) {

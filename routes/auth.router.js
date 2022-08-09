@@ -6,6 +6,7 @@ const auth = require('../middleware/auth.middleware')
 router.post('/login', authController.login)
 router.post('/registration', authController.registration)
 router.post('/logout', authController.logout)
+router.post('/settings', authController.settings)
 router.get('/refresh', authController.refresh)
 router.get('/cities', authController.getCity)
 
