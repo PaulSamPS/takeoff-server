@@ -7,6 +7,7 @@ module.exports = class UserDto {
   avatar
   lastVisit
   bio
+  settings
   constructor(model) {
     this.id = model.id
     this.firstName = model.firstName
@@ -16,5 +17,6 @@ module.exports = class UserDto {
     this.avatar = model.avatar
     this.lastVisit = model.lastVisit
     this.bio = model.bio
+    this.settings = model.settings
   }
 }

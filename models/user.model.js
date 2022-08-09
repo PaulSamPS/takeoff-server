@@ -20,6 +20,11 @@ const UserSchema = new Schema(
       gender: { type: String, required: true },
       familyStatus: { type: String },
     },
+    settings: {
+      notification: {
+        messagesToast: { type: Boolean, default: true },
+      },
+    },
   },
   { timestamps: true }
 )
