@@ -5,22 +5,9 @@ const User = require('../models/user.model')
 class AuthController {
   async registration(req, res, next) {
     try {
-      const { firstName, lastName, email, city, gender, day, month, year, familyStatus, language, password } = req.body
+      const { firstName, lastName, email, city, gender, password } = req.body
 
-      const userData = await authService.registration(
-        firstName,
-        lastName,
-        email,
-        city,
-        gender,
-        day,
-        month,
-        year,
-        familyStatus,
-        language,
-        password,
-        next
-      )
+      const userData = await authService.registration(firstName, lastName, email, city, gender, password, next)
       await res.cookie('refreshToken', userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,

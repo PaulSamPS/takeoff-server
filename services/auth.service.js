@@ -8,7 +8,7 @@ const Followers = require('../models/followers.model')
 const tokenService = require('./token.service')
 
 class AuthService {
-  async registration(firstName, lastName, email, city, gender, day, month, year, familyStatus, language, password, next) {
+  async registration(firstName, lastName, email, city, gender, password, next) {
     if (!password) {
       return next(ApiError.badRequest('Некорректный пароль'))
     }
@@ -25,13 +25,6 @@ class AuthService {
       bio: {
         city,
         gender,
-        birthday: {
-          day,
-          month,
-          year,
-        },
-        familyStatus,
-        language,
       },
     })
     const userDto = new UserDto(user)
