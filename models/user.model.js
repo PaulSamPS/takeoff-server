@@ -9,6 +9,7 @@ const UserSchema = new Schema(
     role: { type: String, default: 'user' },
     avatar: { type: String, default: null },
     lastVisit: { type: Date, default: null },
+    notificationCount: { type: Number, default: 0 },
     bio: {
       birthday: {
         day: { type: Number },

@@ -8,6 +8,7 @@ module.exports = class UserDto {
   lastVisit
   bio
   settings
+  notificationCount
   constructor(model) {
     this.id = model.id
     this.firstName = model.firstName
@@ -18,5 +19,6 @@ module.exports = class UserDto {
     this.lastVisit = model.lastVisit
     this.bio = model.bio
     this.settings = model.settings
+    this.notificationCount = model.notificationCount
   }
 }

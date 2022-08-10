@@ -1,4 +1,5 @@
 const Post = require('../../models/post.model')
+const User = require('../../models/user.model')
 const Notification = require('../../models/notification.model')
 const uuid = require('uuid')
 const path = require('path')
@@ -28,6 +29,7 @@ const likeOrUnlikePost = async (postId, userId, userToNotifyId, like) => {
   try {
     const post = await Post.findById(postId)
     const userToNotify = await Notification.findOne({ user: userToNotifyId })
+    const user = await User.findById(userToNotifyId)
 
     if (!post) return { error: 'Пост не найден' }
 
@@ -52,6 +54,8 @@ const likeOrUnlikePost = async (postId, userId, userToNotifyId, like) => {
       await post.save()
 
       await userToNotify.notifications.unshift(newNotification)
+      user.notificationCount += 1
+      await user.save()
       await userToNotify.save()
 
       return { likeId: newLike._id }
@@ -62,7 +66,10 @@ const likeOrUnlikePost = async (postId, userId, userToNotifyId, like) => {
 
       const indexOf = post.likes.map((like) => like.user.toString()).indexOf(userId)
 
-      await post.likes.splice(indexOf, 1)
+      post.likes.splice(indexOf, 1)
+      user.notificationCount -= 1
+      await user.save()
+      await userToNotify.save()
 
       await post.save()
     }
@@ -99,6 +106,7 @@ const commentPost = async (postId, userId, text) => {
 
 const newCommentNotification = async (postId, commentId, userId, userToNotifyId, text) => {
   const userToNotify = await Notification.findOne({ user: userToNotifyId })
+  const user = await User.findById(userToNotifyId)
 
   const newNotification = {
     _id: uuid.v4(),
@@ -111,6 +119,8 @@ const newCommentNotification = async (postId, commentId, userId, userToNotifyId,
   }
 
   await userToNotify.notifications.unshift(newNotification)
+  user.notificationCount += 1
+  await user.save()
   await userToNotify.save()
 }
 
