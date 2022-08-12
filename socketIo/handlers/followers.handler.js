@@ -6,6 +6,7 @@ const {
   friendsRequestGet,
   friendsGet,
   friendsUSerInfoGet,
+  deleteFriend,
 } = require('../services/followers.service')
 
 module.exports = function followersHandlers(io, socket) {
@@ -51,5 +52,10 @@ module.exports = function followersHandlers(io, socket) {
   socket.on('friendsUserInfo:get', async ({ userId }) => {
     const { friendsUser } = await friendsUSerInfoGet(userId)
     socket.emit('friendsUserInfo:set', { friendsUser })
+  })
+
+  socket.on('friends:delete', async ({ userId, deleteUserId }) => {
+    await deleteFriend(userId, deleteUserId)
+    socket.emit('friends:deleteSuccess')
   })
 }

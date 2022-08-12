@@ -118,4 +118,19 @@ const addToFriends = async (userId, userToFriendId) => {
   return { userFriends }
 }
 
-module.exports = { followersGet, follow, unfollow, addToFriends, friendsRequestGet, friendsGet, friendsUSerInfoGet }
+const deleteFriend = async (userId, deleteUserId) => {
+  const user = await Followers.findOne({ user: userId })
+  const userToDelete = await Followers.findOne({ user: deleteUserId })
+
+  const removeFriend = await user.friends.map((friend) => friend.user.toString()).indexOf(deleteUserId)
+
+  user.friends.splice(removeFriend, 1)
+  await user.save()
+
+  const removeFriendToUser = await userToDelete.friends.map((friend) => friend.user.toString()).indexOf(userId)
+
+  userToDelete.friends.splice(removeFriendToUser, 1)
+  await userToDelete.save()
+}
+
+module.exports = { followersGet, follow, unfollow, addToFriends, friendsRequestGet, friendsGet, friendsUSerInfoGet, deleteFriend }
