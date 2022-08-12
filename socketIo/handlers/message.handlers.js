@@ -9,8 +9,8 @@ module.exports = function messageHandlers(io, socket) {
     !error ? socket.emit('message_list:update', { chat }) : socket.emit('chat:notFound')
   })
 
-  socket.on('message:add', async ({ sender, receiver, message }) => {
-    const { newMessage, error } = await sendMsg(sender, receiver, message)
+  socket.on('message:add', async ({ _id, sender, receiver, message }) => {
+    const { newMessage, error } = await sendMsg(_id, sender, receiver, message)
     const receiverSocket = await findConnectedUser(receiver)
 
     if (receiverSocket) {

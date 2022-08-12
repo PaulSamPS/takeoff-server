@@ -16,12 +16,13 @@ const loadMessages = async (userId, messagesWith) => {
   }
 }
 
-const sendMsg = async (userId, msgSendToUserId, message) => {
+const sendMsg = async (_id, userId, msgSendToUserId, message) => {
   try {
     const user = await Chat.findOne({ user: userId })
     const msgSendToUser = await Chat.findOne({ user: msgSendToUserId })
 
     let newMessage = {
+      _id,
       sender: userId,
       receiver: msgSendToUserId,
       message,

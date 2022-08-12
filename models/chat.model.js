@@ -10,6 +10,7 @@ const ChatSchema = new Schema({
       countUnreadMessages: { type: Number, default: 0 },
       messages: [
         {
+          _id: { type: String, required: true },
           message: { type: String, required: true },
           sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
           receiver: { type: Schema.Types.ObjectId, ref: 'User', required: true },
