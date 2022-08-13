@@ -163,4 +163,9 @@ const getAllPost = async (userId, pageNumber) => {
   return postsToBeSent
 }
 
-module.exports = { likeOrUnlikePost, commentPost, createPost, getAllPost }
+const findPost = async (postId) => {
+  const post = await Post.findById(postId).populate('user').populate('comments.user').populate('likes.user')
+  return post
+}
+
+module.exports = { likeOrUnlikePost, commentPost, createPost, getAllPost, findPost }

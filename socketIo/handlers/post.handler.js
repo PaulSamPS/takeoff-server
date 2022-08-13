@@ -1,4 +1,4 @@
-const { likeOrUnlikePost, commentPost, createPost, getAllPost } = require('../services/post.service')
+const { likeOrUnlikePost, commentPost, createPost, getAllPost, findPost } = require('../services/post.service')
 
 module.exports = function postHandler(io, socket) {
   socket.on('post:get', async ({ userId, pageNumber }) => {
@@ -14,5 +14,10 @@ module.exports = function postHandler(io, socket) {
   socket.on('comment:post', async ({ postId, userId, text }) => {
     const { commentId } = await commentPost(postId, userId, text)
     socket.emit('post:commented', { commentId })
+  })
+
+  socket.on('post:find', async ({ postId }) => {
+    const post = await findPost(postId)
+    socket.emit('post:findSuccess', { post })
   })
 }
