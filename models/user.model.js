@@ -2,8 +2,10 @@ const { Schema, model } = require('mongoose')
 
 const UserSchema = new Schema(
   {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    name: {
+      firstName: { type: String, required: true },
+      lastName: { type: String, required: true },
+    },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: false },
     role: { type: String, default: 'user' },
@@ -29,5 +31,7 @@ const UserSchema = new Schema(
   },
   { timestamps: true }
 )
+
+UserSchema.index({ 'name.firstName': 'text', 'name.lastName': 'text' })
 
 module.exports = model('User', UserSchema)

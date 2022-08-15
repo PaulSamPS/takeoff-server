@@ -1,7 +1,6 @@
 module.exports = class UserDto {
   id
-  firstName
-  lastName
+  name
   email
   role
   avatar
@@ -11,8 +10,7 @@ module.exports = class UserDto {
   notificationCount
   constructor(model) {
     this.id = model.id
-    this.firstName = model.firstName
-    this.lastName = model.lastName
+    this.name = model.name
     this.email = model.email
     this.role = model.role
     this.avatar = model.avatar

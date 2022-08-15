@@ -23,11 +23,11 @@ class UserService {
     }
 
     if (firstName) {
-      user.firstName = firstName
+      user.name.firstName = firstName
     }
 
     if (lastName) {
-      user.lastName = lastName
+      user.name.lastName = lastName
     }
 
     if (email) {

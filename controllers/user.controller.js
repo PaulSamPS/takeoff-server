@@ -14,6 +14,13 @@ class UserController {
     return res.json(userDto)
   }
 
+  async getUsersSearch(req, res) {
+    const { name } = req.body
+    await User.createIndexes({ '$**': 'text' })
+    const users = await User.find({ $text: { $search: name } })
+    return res.json(users)
+  }
+
   async getOne(req, res, next) {
     const { id } = req.params
     const user = await User.findById(id)
