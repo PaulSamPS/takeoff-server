@@ -36,7 +36,7 @@ module.exports = function messageHandlers(io, socket) {
     if (user.chats.length > 0) {
       chatsToBeSent = user.chats.map((chat) => ({
         messagesWith: chat.messagesWith._id,
-        name: chat.messagesWith.firstName + ' ' + chat.messagesWith.lastName,
+        name: chat.messagesWith.name.firstName + ' ' + chat.messagesWith.name.lastName,
         avatar: chat.messagesWith.avatar,
         lastVisit: chat.messagesWith.lastVisit,
         lastMessage: chat.messages[chat.messages.length - 1].message,

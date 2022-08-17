@@ -1,9 +1,12 @@
 const { getAllNotifications } = require('../services/notification.service')
 const User = require('../../models/user.model')
+const UserDto = require('../../dto/user.dto')
+
 module.exports = function notificationHandler(io, socket) {
   socket.on('notification:get', async ({ userId }) => {
     const notification = await getAllNotifications(userId)
-    socket.emit('notifications', { notification })
+    const userDto = new UserDto(notification.user)
+    socket.emit('notifications', { _id: notification._id, user: userDto, notifications: notification.notifications })
   })
 
   socket.on('notifications:countGet', async ({ userId }) => {
