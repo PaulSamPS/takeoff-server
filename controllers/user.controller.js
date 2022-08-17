@@ -9,7 +9,8 @@ const fs = require('fs')
 
 class UserController {
   async getAll(req, res) {
-    const user = await User.find()
+    const { search } = req.body
+    const user = search ? await User.find({ $text: { $search: search } }) : await User.find()
     const userDto = user.map((u) => new UserDto(u))
     return res.json(userDto)
   }
@@ -17,7 +18,8 @@ class UserController {
   async getUsersSearch(req, res) {
     const { name } = req.body
     const users = await User.find({ $text: { $search: name } })
-    return res.json(users)
+    const userDto = users.map((u) => new UserDto(u))
+    return res.json(userDto)
   }
 
   async getOne(req, res, next) {

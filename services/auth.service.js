@@ -6,7 +6,6 @@ const UserDto = require('../dto/user.dto')
 const Chat = require('../models/chat.model')
 const Followers = require('../models/followers.model')
 const tokenService = require('./token.service')
-const uuid = require('uuid')
 
 class AuthService {
   async registration(firstName, lastName, email, city, gender, password, next) {
@@ -19,7 +18,6 @@ class AuthService {
     }
     const hashPassword = await bcrypt.hash(password, 5)
     const user = await User.create({
-      id: uuid.v4(),
       name: {
         firstName,
         lastName,
