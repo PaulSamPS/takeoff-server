@@ -33,68 +33,18 @@ class PostController {
     }
   }
 
-  async getAll(req, res, next) {
-    const { pageNumber } = req.body
-    const { userId } = req.params
-
-    const number = Number(pageNumber)
-    const size = 8
-
-    try {
-      let posts
-
-      if (number === 1) {
-        posts = await Post.find().limit(size).sort({ createdAt: -1 }).populate('user').populate('comments.user').populate('likes.user')
-      } else {
-        const skips = size * (number - 1)
-        posts = await Post.find()
-          .skip(skips)
-          .limit(size)
-          .sort({ createdAt: -1 })
-          .populate('user')
-          .populate('comments.user')
-          .populate('likes.user')
-      }
-
-      if (posts.length === 0) {
-        return res.json([])
-      }
-
-      let postsToBeSent = []
-
-      const loggedUser = await Followers.findOne({ user: userId })
-
-      if (loggedUser.friends.length === 0) {
-        postsToBeSent = posts.filter((post) => post.user._id.toString() === userId)
-      } else {
-        for (let i = 0; i < loggedUser.friends.length; i++) {
-          const foundPostsFromFriends = posts.filter((post) => post.user._id.toString() === loggedUser.friends[i].user.toString())
-
-          if (foundPostsFromFriends.length > 0) postsToBeSent.push(...foundPostsFromFriends)
-        }
-        const foundOwnPosts = posts.filter((post) => post.user._id.toString() === userId)
-        if (foundOwnPosts.length > 0) postsToBeSent.push(...foundOwnPosts)
-      }
-
-      postsToBeSent.length > 0 && postsToBeSent.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-      return res.json(postsToBeSent)
-    } catch (error) {
-      console.error(error)
-      return next(ApiError.badRequest('Что-т пошло не так'))
-    }
-  }
-
   async deletePost(req, res, next) {
     const { postId } = req.params
     const { userId } = req.body
 
     const post = await Post.findByIdAndDelete(postId)
-    const userNotifications = await Notification.findOne({ user: userId })
-    await Notification.updateOne({ _id: `${userNotifications._id}` }, { $pull: { notifications: { post: postId } } })
 
     if (!post) {
       return next(ApiError.badRequest('Пост не найден'))
     }
+
+    const userNotifications = await Notification.findOne({ user: userId })
+    await Notification.updateOne({ _id: userNotifications._id }, { $pull: { notifications: { post: postId } } })
 
     return res.json('Пост удалён')
   }
