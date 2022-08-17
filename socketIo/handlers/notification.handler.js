@@ -1,4 +1,4 @@
-const { getAllNotifications } = require('../services/notification.service')
+const { getAllNotifications, deleteNotification } = require('../services/notification.service')
 const User = require('../../models/user.model')
 const UserDto = require('../../dto/user.dto')
 
@@ -21,5 +21,11 @@ module.exports = function notificationHandler(io, socket) {
       await user.save()
     }
     socket.emit('notifications:unread', { count: user.notificationCount })
+  })
+
+  socket.on('notification:delete', async ({ userId, notificationId }) => {
+    const error = await deleteNotification(userId, notificationId)
+
+    !error && socket.emit('notification:deleted')
   })
 }

@@ -10,4 +10,17 @@ const getAllNotifications = async (userId) => {
   return notifications
 }
 
-module.exports = { getAllNotifications }
+const deleteNotification = async (userId, notificationId) => {
+  const notification = await Notification.findOne({ user: userId })
+
+  if (!notification) {
+    return { error: 'Уведомление не найдено' }
+  }
+
+  const indexOf = notification.notifications.map((notification) => notification._id.toString()).indexOf(notificationId.toString())
+  notification.notifications.splice(indexOf, 1)
+
+  await notification.save()
+}
+
+module.exports = { getAllNotifications, deleteNotification }
