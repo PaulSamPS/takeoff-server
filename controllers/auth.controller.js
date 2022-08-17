@@ -1,26 +1,59 @@
 const authService = require('../services/auth.service')
 const City = require('../models/cities.model')
 const User = require('../models/user.model')
+const ApiError = require("../error/api.error");
+const bcrypt = require("bcrypt");
+const UserDto = require("../dto/user.dto");
+const Chat = require("../models/chat.model");
+const Followers = require("../models/followers.model");
+const Notification = require("../models/notification.model");
+const tokenService = require("../services/token.service");
 
 class AuthController {
   async registration(req, res, next) {
-    try {
-      const { firstName, lastName, email, city, gender, password } = req.body
+    const { firstName, lastName, email, city, gender, password } = req.body
 
-      const userData = await authService.registration(firstName, lastName, email, city, gender, password, next)
-      await res.cookie('refreshToken', userData.refreshToken, {
-        maxAge: 1000 * 60 * 60 * 24 * 30,
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true,
-      })
-      return res.json({
-        accessToken: userData.accessToken,
-        user: userData.user,
-      })
-    } catch (e) {
-      console.log(e)
+    if (!password) {
+      return next(ApiError.badRequest('Некорректный пароль'))
     }
+
+    const candidateEmail = await User.findOne({ email: email })
+    if (candidateEmail) {
+      return next(ApiError.badRequest('Пользователь с таким email уже зарегистрирован'))
+    }
+
+    const hashPassword = await bcrypt.hash(password, 5)
+    const user = await User.create({
+      name: {
+        firstName,
+        lastName,
+      },
+      email: email.toLowerCase(),
+      password: hashPassword,
+      bio: {
+        city,
+        gender,
+      },
+    })
+    const userDto = new UserDto(user)
+
+    await new Chat({ user: userDto.id, chats: [] }).save()
+    await new Followers({ user: userDto.id, followers: [], following: [], friends: [] }).save()
+    await new Notification({ user: userDto.id, notifications: [] }).save()
+
+    const tokens = tokenService.generateTokens({ ...userDto })
+    await tokenService.saveToken(userDto.id, tokens.refreshToken)
+
+    await res.cookie('refreshToken', tokens.refreshToken, {
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    })
+    return res.json({
+      accessToken: tokens.accessToken,
+      user: userDto,
+    })
   }
 
   async login(req, res, next) {

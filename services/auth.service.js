@@ -8,38 +8,6 @@ const Followers = require('../models/followers.model')
 const tokenService = require('./token.service')
 
 class AuthService {
-  async registration(firstName, lastName, email, city, gender, password, next) {
-    if (!password) {
-      return next(ApiError.badRequest('Некорректный пароль'))
-    }
-    const candidateEmail = await User.findOne({ email: email })
-    if (candidateEmail) {
-      return next(ApiError.badRequest('Пользователь с таким email уже существует'))
-    }
-    const hashPassword = await bcrypt.hash(password, 5)
-    const user = await User.create({
-      name: {
-        firstName,
-        lastName,
-      },
-      email: email.toLowerCase(),
-      password: hashPassword,
-      bio: {
-        city,
-        gender,
-      },
-    })
-    const userDto = new UserDto(user)
-
-    await new Chat({ user: userDto.id, chats: [] }).save()
-    await new Followers({ user: userDto.id, followers: [], following: [], friends: [] }).save()
-    await new Notification({ user: userDto.id, notifications: [] }).save()
-
-    const tokens = tokenService.generateTokens({ ...userDto })
-    await tokenService.saveToken(userDto.id, tokens.refreshToken)
-    return { ...tokens, user: userDto }
-  }
-
   async login(email, password, next) {
     const user = await User.findOne({ email: email.toLowerCase() }).select('+password')
     if (!user) {
