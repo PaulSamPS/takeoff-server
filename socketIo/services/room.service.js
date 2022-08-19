@@ -31,6 +31,9 @@ const removeUser = async (socketId) => {
 
 const getUser = async (userId) => {
   const user = await User.findById(userId)
+  if (!user) {
+    return {error: true}
+  }
   return { user }
 }
 

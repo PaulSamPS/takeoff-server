@@ -10,8 +10,8 @@ module.exports = function userHandlers(io, socket) {
   })
 
   socket.on('userInfo:get', async ({ userId }) => {
-    const { user } = await getUser(userId)
-    socket.emit('userInfo:user', { user })
+    const { user, error } = await getUser(userId)
+    !error && socket.emit('userInfo:user', { user })
   })
 
   socket.on('logout', async () => {

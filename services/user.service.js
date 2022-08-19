@@ -1,4 +1,9 @@
 const User = require('../models/user.model')
+const Post = require('../models/post.model')
+const Followers = require('../models/followers.model')
+const Notification = require('../models/notification.model')
+const Chat = require('../models/chat.model')
+const Token = require('../models/token.model')
 const ApiError = require('../error/api.error')
 const UserDto = require('../dto/user.dto')
 const uuid = require('uuid')
@@ -72,6 +77,15 @@ class UserService {
     const userDto = new UserDto(user)
 
     return { user: userDto }
+  }
+
+  async delete(userId) {
+    await User.findByIdAndDelete(userId)
+    await Post.findOneAndDelete({user: userId})
+    await Followers.findOneAndDelete({user: userId})
+    await Chat.findOneAndDelete({user: userId})
+    await Notification.findOneAndDelete({user: userId})
+    await Token.findOneAndDelete({user: userId})
   }
 }
 

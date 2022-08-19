@@ -9,6 +9,7 @@ router.post('/:id/remove/:avatar', userController.removeUser)
 router.post('/update/:id', userController.updateUser)
 router.post('/search', userController.getUsersSearch)
 router.post('/', userController.getAll)
+router.post('/delete', userController.delete)
 router.get('/notifications/:id', userController.notification)
 router.get('/:id', userController.getOne)
 

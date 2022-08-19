@@ -88,6 +88,13 @@ class UserController {
 
     return res.json(notifications)
   }
+
+  async delete(req, res) {
+    const {userId} = req.body
+    await userService.delete(userId)
+
+    return res.json('Пользователь удалён')
+  }
 }
 
 module.exports = new UserController()
