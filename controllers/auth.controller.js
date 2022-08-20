@@ -75,6 +75,11 @@ class AuthController {
     }
   }
 
+  async changePassword(req,res,next) {
+    const {userId, currentPassword, newPassword, repeatNewPassword} = req.body
+    await authService.changePassword(userId,currentPassword,newPassword,repeatNewPassword, res, next)
+  }
+
   async logout(req, res) {
     const { refreshToken } = req.cookies
     await authService.logout(refreshToken)

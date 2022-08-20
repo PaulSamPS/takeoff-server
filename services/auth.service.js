@@ -25,6 +25,24 @@ class AuthService {
     return { ...tokens, user: userDto }
   }
 
+  async changePassword(userId, currentPassword, newPassword, repeatNewPassword, res, next) {
+    const user = await User.findById(userId).select('+password')
+
+    let comparePassword = await bcrypt.compareSync(currentPassword, user.password)
+    if (!comparePassword) {
+      return next(ApiError.internal('Неверный пароль'))
+    }
+
+    let compareNewPassword = await newPassword === repeatNewPassword
+    if (!compareNewPassword) {
+      return next(ApiError.internal('Пароли не совпадают'))
+    }
+    const hashPassword = await bcrypt.hash(newPassword, 5)
+    user.password = hashPassword
+    await user.save()
+    return res.json('Пароль обновлен')
+  }
+
   async logout(refreshToken) {
     return await tokenService.removeToken(refreshToken)
   }
