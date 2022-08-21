@@ -4,6 +4,11 @@ const ApiError = require('../../error/api.error')
 
 const friendsRequestGet = async (userId) => {
   const folUser = await Followers.findOne({ user: userId }).populate('following.user')
+
+  if (!folUser) {
+    return []
+  }
+
   let followingsUser =
     folUser &&
     folUser.following.map((e) => {
@@ -15,6 +20,10 @@ const friendsRequestGet = async (userId) => {
 
 const friendsGet = async (userId) => {
   const user = await Followers.findOne({ user: userId }).populate('friends.user')
+
+  if (!user) {
+    return []
+  }
 
   let friendsUser =
     user &&
@@ -28,6 +37,10 @@ const friendsGet = async (userId) => {
 const friendsUSerInfoGet = async (userId) => {
   const user = await Followers.findOne({ user: userId }).populate('friends.user')
 
+  if (!friendsUSerInfoGet) {
+    return []
+  }
+
   let friendsUser =
     user &&
     user.friends.map((e) => {
@@ -40,6 +53,14 @@ const friendsUSerInfoGet = async (userId) => {
 const followersGet = async (userId) => {
   const user = await Followers.findOne({ user: userId }).populate('following.user')
   const folUser = await Followers.findOne({ user: userId }).populate('followers.user')
+
+  if (!user) {
+    return []
+  }
+
+  if (!folUser) {
+    return []
+  }
 
   let followingsUser =
     user &&

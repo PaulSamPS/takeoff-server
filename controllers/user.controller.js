@@ -31,10 +31,10 @@ class UserController {
     return res.json(user)
   }
 
-  async avatar(req, res) {
+  async uploadAvatar(req, res) {
     const { id } = req.params
     const { avatar } = req.files
-    const user = await userService.avatar(id, avatar)
+    const user = await userService.uploadAvatar(id, avatar)
     return res.json(user)
   }
 

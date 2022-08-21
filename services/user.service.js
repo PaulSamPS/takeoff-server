@@ -10,7 +10,7 @@ const uuid = require('uuid')
 const path = require('path')
 
 class UserService {
-  async avatar(id, avatar) {
+  async uploadAvatar(id, avatar) {
     const user = await User.findOne({ _id: id })
     let fileName = uuid.v4() + '.jpg'
     await avatar.mv(path.resolve(__dirname, '..', 'static/avatar', fileName))

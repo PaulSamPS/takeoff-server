@@ -125,7 +125,7 @@ const newCommentNotification = async (postId, commentId, userId, userToNotifyId,
 }
 
 const getAllPost = async (userId, pageNumber) => {
-  const number = Number(pageNumber)
+  const number = Number(pageNumber) | 1
   const size = 8
 
   let posts
