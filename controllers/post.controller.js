@@ -13,7 +13,7 @@ class PostController {
     try {
       const newPost = {
         user: id,
-        text,
+        text: text ? text : null,
       }
       if (location) newPost.location = location
       if (image) {

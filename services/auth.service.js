@@ -40,7 +40,7 @@ class AuthService {
     const hashPassword = await bcrypt.hash(newPassword, 5)
     user.password = hashPassword
     await user.save()
-    return res.json('Пароль обновлен')
+    return res.json({message: 'Пароль обновлен'})
   }
 
   async logout(refreshToken) {

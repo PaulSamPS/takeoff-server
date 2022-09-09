@@ -33,8 +33,9 @@ class UserController {
 
   async avatar(req, res) {
     const { id } = req.params
-    const { avatar } = req.files
-    const user = await userService.avatar(id, avatar)
+    const { avatarOld } = req.body
+    const avatarNew = req.file
+    const user = await userService.avatar(id, avatarOld, avatarNew)
     return res.json(user)
   }
 
@@ -90,7 +91,7 @@ class UserController {
   }
 
   async delete(req, res) {
-    const {userId} = req.body
+    const { userId } = req.body
     await userService.delete(userId)
 
     return res.json('Пользователь удалён')

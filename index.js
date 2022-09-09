@@ -10,6 +10,7 @@ const cookieParser = require('cookie-parser')
 const { createServer } = require('http')
 const { Server } = require('socket.io')
 const connection = require('./socketIo/connection')
+const fs = require("fs");
 
 const PORT = process.env.PORT || 4000
 
@@ -25,7 +26,6 @@ app.use(
 )
 app.use(express.json())
 app.use(express.static(path.resolve(__dirname, 'static')))
-app.use(fileUpload({}))
 app.use('/api', router)
 app.use(errorHandler)
 

@@ -6,16 +6,23 @@ const Chat = require('../models/chat.model')
 const Token = require('../models/token.model')
 const ApiError = require('../error/api.error')
 const UserDto = require('../dto/user.dto')
-const uuid = require('uuid')
 const path = require('path')
+const fs = require('fs')
 
 class UserService {
-  async avatar(id, avatar) {
+  async avatar(id, avatarOld, avatarNew) {
     const user = await User.findOne({ _id: id })
-    let fileName = uuid.v4() + '.jpg'
-    await avatar.mv(path.resolve(__dirname, '..', 'static/avatar', fileName))
-    user.avatar = fileName
-    await user.save()
+    if (avatarOld !== null && avatarOld !== undefined) {
+      fs.unlink(path.resolve(__dirname, '..', 'static/avatar', avatarOld), function (err) {
+        if (err) throw err
+        console.log('Файл удален')
+      })
+      user.avatar = avatarNew.filename
+      await user.save()
+    } else {
+      user.avatar = avatarNew.filename
+      await user.save()
+    }
     const userDto = new UserDto(user)
     return { user: userDto }
   }
@@ -81,11 +88,11 @@ class UserService {
 
   async delete(userId) {
     await User.findByIdAndDelete(userId)
-    await Post.findOneAndDelete({user: userId})
-    await Followers.findOneAndDelete({user: userId})
-    await Chat.findOneAndDelete({user: userId})
-    await Notification.findOneAndDelete({user: userId})
-    await Token.findOneAndDelete({user: userId})
+    await Post.findOneAndDelete({ user: userId })
+    await Followers.findOneAndDelete({ user: userId })
+    await Chat.findOneAndDelete({ user: userId })
+    await Notification.findOneAndDelete({ user: userId })
+    await Token.findOneAndDelete({ user: userId })
   }
 }
 
