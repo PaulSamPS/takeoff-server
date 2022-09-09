@@ -4,12 +4,12 @@ const uuid = require('uuid')
 const fs = require('fs')
 
 exports.upload = (folderName) => {
-  return (imageUpload = multer({
+  return multer({
     storage: multer.diskStorage({
       destination: (req, file, cb) => {
         const path = `static/${folderName}`
         fs.mkdirSync(path, { recursive: true })
-        cb(null, `static/avatar`)
+        cb(null, `static/${folderName}`)
       },
       filename: (req, file, cb) => {
         cb(null, uuid.v4() + path.extname(file.originalname))
@@ -26,7 +26,7 @@ exports.upload = (folderName) => {
       }
       cb('Give proper files format to upload')
     },
-  }))
+  })
 }
 
 // const storage = multer.diskStorage({

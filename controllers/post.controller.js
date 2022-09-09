@@ -4,11 +4,12 @@ const Notification = require('../models/notification.model')
 const ApiError = require('../error/api.error')
 const uuid = require('uuid')
 const path = require('path')
+const fs = require('fs')
 
 class PostController {
   async create(req, res, next) {
     const { id, text, location } = req.body
-    const { image } = req.files !== undefined && req.files
+    const image = req.file
 
     try {
       const newPost = {
@@ -17,9 +18,7 @@ class PostController {
       }
       if (location) newPost.location = location
       if (image) {
-        let fileName = uuid.v4() + '.jpg'
-        await image.mv(path.resolve(__dirname, '..', 'static/post', fileName))
-        newPost.image = fileName
+        newPost.image = image.filename
       }
 
       const post = await new Post(newPost).save()
@@ -35,12 +34,19 @@ class PostController {
 
   async deletePost(req, res, next) {
     const { postId } = req.params
-    const { userId } = req.body
+    const { userId, image } = req.body
 
     const post = await Post.findByIdAndDelete(postId)
 
     if (!post) {
       return next(ApiError.badRequest('Пост не найден'))
+    }
+
+    if (image !== null && image !== undefined) {
+      fs.unlink(path.resolve(__dirname, '..', 'static/post', image), function (err) {
+        if (err) throw err
+        console.log('Файл удален')
+      })
     }
 
     const userNotifications = await Notification.findOne({ user: userId })
