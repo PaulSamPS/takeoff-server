@@ -1,4 +1,4 @@
-const { likeOrUnlikePost, commentPost, createPost, getAllPost, findPost } = require('../services/post.service')
+const { likeOrUnlikePost, commentPost, getAllPost, findPost } = require('../services/post.service')
 
 module.exports = function postHandler(io, socket) {
   socket.on('post:get', async ({ userId, pageNumber }) => {

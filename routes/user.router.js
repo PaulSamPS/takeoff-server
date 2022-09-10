@@ -1,10 +1,6 @@
 const Router = require('express')
 const router = new Router()
 const userController = require('../controllers/user.controller')
-const auth = require('../middleware/auth.middleware')
-const multer = require('multer')
-const uuid = require('uuid')
-const path = require('path')
 const { upload } = require('../utils/fileUpload')
 
 router.post('/:id/upload/avatar', upload('avatar').single('avatar'), userController.avatar)

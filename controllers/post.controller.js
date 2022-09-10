@@ -1,8 +1,6 @@
 const Post = require('../models/post.model')
-const Followers = require('../models/followers.model')
 const Notification = require('../models/notification.model')
 const ApiError = require('../error/api.error')
-const uuid = require('uuid')
 const path = require('path')
 const fs = require('fs')
 
