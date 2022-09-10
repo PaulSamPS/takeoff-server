@@ -12,7 +12,8 @@ const fs = require('fs')
 class UserService {
   async avatar(id, avatarOld, avatarNew) {
     const user = await User.findOne({ _id: id })
-    if (avatarOld !== null && avatarOld !== undefined) {
+
+    if (avatarOld !== '') {
       fs.unlink(path.resolve(__dirname, '..', 'static/avatar', avatarOld), function (err) {
         if (err) throw err
         console.log('Файл удален')
@@ -23,6 +24,7 @@ class UserService {
       user.avatar = avatarNew.filename
       await user.save()
     }
+
     const userDto = new UserDto(user)
     return { user: userDto }
   }

@@ -3,7 +3,7 @@ const router = new Router()
 const userController = require('../controllers/user.controller')
 const { upload } = require('../utils/fileUpload')
 
-router.post('/:id/upload/avatar', upload('avatar').single('avatar'), userController.avatar)
+router.post('/:id/upload/avatar', upload('avatar').single('avatarNew'), userController.avatar)
 router.post('/:id/remove/avatar/:avatar', userController.removeAvatar)
 router.post('/:id/remove/:avatar', userController.removeUser)
 router.post('/update/:id', userController.updateUser)
