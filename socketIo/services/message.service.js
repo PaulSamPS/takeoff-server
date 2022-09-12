@@ -79,8 +79,10 @@ const setMsgRead = async (userId, msgSendToUserId) => {
     const user = await Chat.findOne({ user: msgSendToUserId }).populate('chats.messagesWith')
     const chatTo = user.chats.find((chat) => chat.messagesWith._id.toString() === userId)
 
-    chatTo.countUnreadMessages = 0
-    await user.save()
+    if (chatTo) {
+      chatTo.countUnreadMessages = 0
+      await user.save()
+    }
   } catch (error) {
     console.error(error)
   }

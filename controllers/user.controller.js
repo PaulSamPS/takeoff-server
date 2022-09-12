@@ -6,6 +6,7 @@ const ApiError = require('../error/api.error')
 const UserDto = require('../dto/user.dto')
 const path = require('path')
 const fs = require('fs')
+const sharp = require('sharp')
 
 class UserController {
   async getAll(req, res) {
@@ -31,10 +32,15 @@ class UserController {
     return res.json(user)
   }
 
-  async avatar(req, res) {
+  async avatar(req, res, next) {
     const { id } = req.params
     const { avatarOld } = req.body
     const avatarNew = req.file
+    await sharp(req.file.path)
+      .resize(200, 200)
+      .jpeg({ quality: 90 })
+      .toFile(path.resolve(req.file.destination, '200x200', req.file.filename))
+    fs.unlinkSync(req.file.path)
     const user = await userService.avatar(id, avatarOld, avatarNew)
     return res.json(user)
   }

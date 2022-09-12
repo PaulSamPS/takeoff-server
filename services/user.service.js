@@ -12,9 +12,10 @@ const fs = require('fs')
 class UserService {
   async avatar(id, avatarOld, avatarNew) {
     const user = await User.findOne({ _id: id })
+    console.log(avatarOld)
 
-    if (avatarOld !== '') {
-      fs.unlink(path.resolve(__dirname, '..', 'static/avatar', avatarOld), function (err) {
+    if (avatarOld !== undefined && avatarOld !== '') {
+      fs.unlink(path.resolve(__dirname, '..', 'static/avatar/200x200', avatarOld), function (err) {
         if (err) throw err
         console.log('Файл удален')
       })

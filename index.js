@@ -18,6 +18,17 @@ const app = express()
 const httpServer = createServer(app)
 const io = new Server(httpServer, { cors: { origin: process.env.CLIENT_URL, methods: ['GET', 'POST'] }, serveClient: false })
 app.use(cookieParser(process.env.SECRET_COOKIE))
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_URL);
+
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+    res.setHeader('Access-Control-Allow-Credentials', true);
+
+    next();
+});
 app.use(
   cors({
     credentials: true,
