@@ -3,6 +3,7 @@ const Notification = require('../models/notification.model')
 const ApiError = require('../error/api.error')
 const path = require('path')
 const fs = require('fs')
+const sharp = require('sharp')
 
 class PostController {
   async create(req, res, next) {
@@ -16,6 +17,11 @@ class PostController {
       }
       if (location) newPost.location = location
       if (image) {
+        await sharp(req.file.path)
+          .resize(540, 310)
+          .jpeg({ quality: 100 })
+          .toFile(path.resolve(req.file.destination, '540x310', req.file.filename))
+        fs.unlinkSync(req.file.path)
         newPost.image = image.filename
       }
 
@@ -41,7 +47,7 @@ class PostController {
     }
 
     if (image !== null && image !== undefined) {
-      fs.unlink(path.resolve(__dirname, '..', 'static/post', image), function (err) {
+      fs.unlink(path.resolve(__dirname, '..', 'static/post/540x310', image), function (err) {
         if (err) throw err
         console.log('Файл удален')
       })

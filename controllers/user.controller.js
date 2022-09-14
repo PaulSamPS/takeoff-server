@@ -38,7 +38,7 @@ class UserController {
     const avatarNew = req.file
     await sharp(req.file.path)
       .resize(200, 200)
-      .jpeg({ quality: 90 })
+      .jpeg({ quality: 100 })
       .toFile(path.resolve(req.file.destination, '200x200', req.file.filename))
     fs.unlinkSync(req.file.path)
     const user = await userService.avatar(id, avatarOld, avatarNew)

@@ -23,6 +23,7 @@ module.exports = function followersHandlers(io, socket) {
     await unfollow(userId, userToUnfollowId)
     const { followingsUser, followersUser } = await followersGet(userId)
     socket.emit('followings:done', { followingsUser, followersUser })
+    socket.emit('followersUserInfo:set', { followingsUser })
   })
 
   socket.on('friendsRequest:get', async ({ userId }) => {
@@ -54,6 +55,12 @@ module.exports = function followersHandlers(io, socket) {
   socket.on('friendsUserInfo:get', async ({ userId }) => {
     const { friendsUser } = await friendsUSerInfoGet(userId)
     socket.emit('friendsUserInfo:set', { friendsUser })
+  })
+
+  socket.on('followersUserInfo:get', async ({ userId }) => {
+    const { followingsUser } = await followersGet(userId)
+    console.log(followingsUser)
+    socket.emit('followersUserInfo:set', { followingsUser })
   })
 
   socket.on('friends:delete', async ({ userId, deleteUserId }) => {
