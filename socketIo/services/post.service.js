@@ -54,9 +54,11 @@ const likeOrUnlikePost = async (postId, userId, userToNotifyId, like) => {
       await post.save()
 
       await userToNotify.notifications.unshift(newNotification)
-      user.notificationCount += 1
-      await user.save()
-      await userToNotify.save()
+      if (post.user.toString() !== userId) {
+        user.notificationCount += 1
+        await user.save()
+        await userToNotify.save()
+      }
 
       return { likeId: newLike._id }
     } else {
@@ -67,9 +69,11 @@ const likeOrUnlikePost = async (postId, userId, userToNotifyId, like) => {
       const indexOf = post.likes.map((like) => like.user.toString()).indexOf(userId)
 
       post.likes.splice(indexOf, 1)
-      user.notificationCount -= 1
-      await user.save()
-      await userToNotify.save()
+      if (post.user.toString() !== userId) {
+        user.notificationCount -= 1
+        await user.save()
+        await userToNotify.save()
+      }
 
       await post.save()
     }
@@ -119,9 +123,11 @@ const newCommentNotification = async (postId, commentId, userId, userToNotifyId,
   }
 
   await userToNotify.notifications.unshift(newNotification)
-  user.notificationCount += 1
-  await user.save()
-  await userToNotify.save()
+  if (user._id.toString() !== userId) {
+    user.notificationCount += 1
+    await user.save()
+    await userToNotify.save()
+  }
 }
 
 const getAllPost = async (userId, pageNumber) => {
